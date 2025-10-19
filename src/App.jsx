@@ -23,8 +23,8 @@ const EMAILJS_PUBLIC_KEY = "pk_-K0gF-LigSTJAs";
 const CLOUDINARY_CLOUD_NAME = "dzeebkvae";
 const CLOUDINARY_UPLOAD_PRESET = "fgu1mjq8";
 
-const WHATSAPP_PHONE_NUMBER = "919876543210";
-const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I'm interested in learning more about Radiance Chess Academy.";
+const WHATSAPP_PHONE_NUMBER = "917094134976";
+const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
 
 // --- Initialize Firebase ---
 const app = initializeApp(firebaseConfig);
@@ -74,23 +74,29 @@ const Header = ({ setPage }) => {
                     <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base">
                         Book FREE Trial
                     </a>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white">
-                        {isMobileMenuOpen ? <X /> : <Menu />}
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white relative h-6 w-6">
+                         <Menu className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 rotate-90' : 'opacity-100 rotate-0'}`} />
+                         <X className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-90'}`} />
                     </button>
                 </div>
             </div>
-            {isMobileMenuOpen && (
-                <div className="md:hidden bg-gray-800 border-t border-gray-700">
+            {/* Animated Mobile Menu */}
+            <div className={`
+                md:hidden bg-gray-800 border-t border-gray-700
+                overflow-hidden transition-all duration-500 ease-in-out
+                ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+            `}>
+                <div className="py-2">
                     {navLinks.map(link => (
                          <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
-                            {link.name}
-                        </a>
+                             {link.name}
+                         </a>
                     ))}
                     <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer block py-3 px-6 text-amber-400 font-bold hover:bg-gray-700 transition">
                         Book FREE Trial
                     </a>
                 </div>
-            )}
+            </div>
         </header>
     );
 };
@@ -100,7 +106,7 @@ const Footer = ({ setPage }) => (
         <div className="container mx-auto px-6 py-8">
             <div className="md:flex md:justify-between items-center text-center md:text-left">
                 <div className="mb-4 md:mb-0">
-                     <a onClick={() => setPage('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start">
+                    <a onClick={() => setPage('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start">
                         <Crown className="mr-2" size={24}/>
                         Radiance Chess Academy
                     </a>
@@ -117,8 +123,6 @@ const Footer = ({ setPage }) => (
                 <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
                 <span className="hidden sm:inline">|</span>
                 <a onClick={() => setPage('terms')} className="cursor-pointer hover:text-white transition">Terms & Conditions</a>
-                 <span className="hidden sm:inline">|</span>
-                <a onClick={() => setPage('admin')} className="cursor-pointer hover:text-white transition">Admin</a>
             </div>
         </div>
     </footer>
@@ -127,8 +131,13 @@ const Footer = ({ setPage }) => (
 const WhatsAppButton = () => {
     const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`;
     return (
-        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition transform hover:scale-110">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.523-5.587-1.474l-6.355 1.666z"/></svg>
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 group flex items-center">
+            <span className="absolute right-20 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+                Contact Us
+            </span>
+            <div className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-45">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.523-5.587-1.474l-6.355 1.666z"/></svg>
+            </div>
         </a>
     );
 };
@@ -142,11 +151,12 @@ const Spinner = ({ color = 'text-white' }) => (
 
 const ImageSlideshow = () => {
     const slides = [
-        { url: '/images/slide1.jpg', caption: 'National Junior Championship Winners' },
-        { url: '/images/slide2.jpg', caption: 'State Level Tournament Victory' },
-        { url: '/images/slide3.jpg', caption: 'Youngest Rated Player Award' },
-        { url: '/images/slide4.jpg', caption: 'Inter-Academy Champions Trophy' },
-        { url: '/images/slide5.jpg', caption: 'International Open Runner-Up' },
+        { url: '/images/slide1.jpg', caption: 'District Level Tournament Winner' },
+        { url: '/images/slide2.jpg', caption: 'State Level Tournament Winner' },
+        { url: '/images/slide3.jpg', caption: 'District Level Tournament Winner' },
+        { url: '/images/slide4.jpg', caption: 'State Level Tournament Winner' },
+        { url: '/images/slide5.jpg', caption: 'State Level Tournament Winner' },
+         { url: '/images/slide6.jpg', caption: 'District Level Tournament Winner' },
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -169,36 +179,36 @@ const ImageSlideshow = () => {
         const isVisible = Math.abs(offset) <= 1;
 
         return {
-            transform: `translateX(${offset * 60}%) scale(${offset === 0 ? 1 : 0.7})`,
+            transform: `translateX(${offset * 50}%) scale(${offset === 0 ? 1 : 0.8})`,
             filter: `blur(${offset === 0 ? 0 : '4px'}) brightness(${offset === 0 ? 1 : 0.5})`,
-            zIndex: offset === 0 ? 10 : 1,
+            zIndex: totalSlides - Math.abs(offset),
             opacity: isVisible ? 1 : 0,
             transition: 'all 0.5s ease-in-out',
         };
     };
 
     return (
-        <div className="h-[500px] w-full relative flex items-center justify-center overflow-hidden">
-            <div className="relative w-full h-3/4">
+        <div className="h-[300px] sm:h-[500px] w-full relative flex items-center justify-center overflow-hidden">
+            <div className="relative w-full h-full sm:h-3/4">
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className="absolute top-0 left-0 w-full h-full"
+                        className="absolute top-0 left-0 w-full h-full rounded-2xl shadow-2xl"
                         style={getSlideStyle(index)}
                     >
-                        <img src={slide.url} alt={slide.caption} className="w-full h-full object-contain rounded-2xl shadow-2xl" />
+                        <img src={slide.url} alt={slide.caption} className="w-full h-full object-contain" />
                     </div>
                 ))}
             </div>
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full z-20">
+            <div className="absolute bottom-4 sm:bottom-16 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full z-20 text-sm sm:text-base">
                 {slides[currentIndex].caption}
             </div>
-            <div onClick={prevSlide} className="absolute top-1/2 -translate-y-1/2 left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer z-20">
+            <button onClick={prevSlide} className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-5 text-2xl rounded-full p-2 bg-black/30 hover:bg-black/50 text-white cursor-pointer z-30 transition">
                 <ChevronLeft size={30} />
-            </div>
-            <div onClick={nextSlide} className="absolute top-1/2 -translate-y-1/2 right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer z-20">
+            </button>
+            <button onClick={nextSlide} className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-5 text-2xl rounded-full p-2 bg-black/30 hover:bg-black/50 text-white cursor-pointer z-30 transition">
                 <ChevronRight size={30} />
-            </div>
+            </button>
         </div>
     );
 };
@@ -223,10 +233,12 @@ const HomePage = ({ setPage }) => {
     const handleViewDetail = (post) => {
         setSelectedPost(post);
         setView('detail');
+        // Scroll smoothly to the top when navigating to the detail view
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const PostCard = ({ post, onCardClick }) => (
-        <div onClick={() => onCardClick(post)} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 flex flex-col group cursor-pointer shadow-sm hover:shadow-lg transition-shadow'>
+        <div onClick={() => onCardClick(post)} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 flex flex-col group cursor-pointer shadow-sm hover:shadow-lg transition-shadow h-full'>
             <div className="overflow-hidden">
                 <img src={post.studentImageUrl} alt={`Photo of ${post.studentName}`} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
@@ -240,7 +252,6 @@ const HomePage = ({ setPage }) => {
     
     if (view === 'detail' && selectedPost) {
         const post = selectedPost;
-        const postDate = post.createdAt?.toDate ? post.createdAt.toDate() : new Date();
         return (
              <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                 <button onClick={() => setView('allPosts')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8">
@@ -248,7 +259,7 @@ const HomePage = ({ setPage }) => {
                 </button>
                 <div className="prose prose-invert prose-lg max-w-none">
                     <h1>{post.title}</h1>
-                    <p className="text-gray-400 text-base">By Radiance Academy Admin • {postDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    {/* Removed the author/date section as requested */}
                     <p>{post.summary}</p>
                     <div className="mt-12 flex flex-col md:flex-row items-start gap-8 bg-gray-800/80 p-6 rounded-lg border border-gray-700">
                         <img src={post.studentImageUrl} alt={`Photo of ${post.studentName}`} className="w-full md:w-1/3 rounded-lg object-cover"/>
@@ -323,11 +334,11 @@ const HomePage = ({ setPage }) => {
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We provide a world-class learning environment to nurture the champion in your child.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BookOpenCheck className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Structured Curriculum</h3><p className="text-gray-400">A comprehensive syllabus designed by experts for all levels, from beginner to advanced.</p></div>
                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Users className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Small Group Classes</h3><p className="text-gray-400">Personalized attention guaranteed with a maximum of 6 students per batch.</p></div>
-                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
-                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BarChart3 className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Performance Tracking</h3><p className="text-gray-400">Regular progress reports and feedback sessions to monitor your child's growth.</p></div>
                     </div>
                 </div>
@@ -341,11 +352,19 @@ const HomePage = ({ setPage }) => {
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                       {blogPosts.length > 0 ? blogPosts.slice(0, 3).map((post) => (
-                           <PostCard key={post.id} post={post} onCardClick={handleViewDetail}/>
-                       )) : <p className="col-span-full text-center text-gray-400">Loading posts...</p>}
-                    </div>
+
+                    {blogPosts.length > 0 ? (
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
+                           {blogPosts.slice(0, 3).map((post) => (
+                               <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center">
+                                    <PostCard post={post} onCardClick={handleViewDetail}/>
+                               </div>
+                           ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-gray-400">Loading posts...</p>
+                    )}
+
                     {blogPosts.length > 3 && (
                         <div className="text-center mt-12">
                             <button onClick={() => setView('allPosts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg">View All Posts</button>
@@ -356,13 +375,13 @@ const HomePage = ({ setPage }) => {
 
              <section id="faq" className="py-20">
                 <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                     <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
-                     <div className="space-y-4">
-                        <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
-                         <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What if my child misses a class?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We understand that schedules can be busy. We offer compensatory classes that can be scheduled at your convenience, subject to availability. All our sessions are also recorded and made available on the student portal.</p></details>
-                         <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
-                         <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
-                     </div>
+                         <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
+                         <div className="space-y-4">
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What if my child misses a class?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We understand that schedules can be busy. We offer compensatory classes that can be scheduled at your convenience, subject to availability. All our sessions are also recorded and made available on the student portal.</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
+                         </div>
                 </div>
             </section>
         </main>
@@ -396,26 +415,26 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
 
     if (isPopup) {
          return (
-             <form ref={formRef} onSubmit={handleSubmit}>
-                <div className="space-y-4">
-                    <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                    <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                    <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                    <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                    <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                    <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                        <option value="" disabled>Chess Experience Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                    </select>
-                    <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg flex items-center justify-center">
-                        {isLoading ? <Spinner color="text-gray-900" /> : 'Book My FREE Class'}
-                    </button>
-                </div>
-                {status.message && <div className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</div>}
-             </form>
-         )
+               <form ref={formRef} onSubmit={handleSubmit}>
+                   <div className="space-y-4">
+                       <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                       <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                       <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                       <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                       <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                       <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                           <option value="" disabled>Chess Experience Level</option>
+                           <option value="Beginner">Beginner</option>
+                           <option value="Intermediate">Intermediate</option>
+                           <option value="Advanced">Advanced</option>
+                       </select>
+                       <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg flex items-center justify-center">
+                           {isLoading ? <Spinner color="text-gray-900" /> : 'Book My FREE Class'}
+                       </button>
+                   </div>
+                   {status.message && <div className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</div>}
+                </form>
+           )
     }
 
     return (
@@ -423,13 +442,13 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
             <div className="container mx-auto px-4 sm:px-6">
                  <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
                     <div className="lg:w-1/2 text-center lg:text-left">
-                         <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
-                         <p className="mt-4 text-gray-300 text-lg">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
-                         <div className="mt-8 space-y-4 text-gray-300">
-                            <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>1-on-1 interaction with a senior coach</span></div>
-                            <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Experience our unique teaching method</span></div>
-                            <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Understand your child's strengths & weaknesses</span></div>
-                         </div>
+                          <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
+                          <p className="mt-4 text-gray-300 text-lg">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
+                          <div className="mt-8 space-y-4 text-gray-300">
+                              <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>1-on-1 interaction with a senior coach</span></div>
+                              <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Experience our unique teaching method</span></div>
+                              <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Understand your child's strengths & weaknesses</span></div>
+                          </div>
                     </div>
                     <div className="lg:w-1/2 mt-10 lg:mt-0">
                         <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
@@ -517,50 +536,50 @@ const HiringPage = () => {
         <main className="py-20">
             <section id="hiring">
                 <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-                     <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
-                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-                                Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
-                            </p>
-                        </div>
-                        <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
-                            <form ref={formRef} onSubmit={handleSubmit}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">First Name *</label>
-                                        <input type="text" name="firstName" id="firstName" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">Last Name *</label>
-                                        <input type="text" name="lastName" id="lastName" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">Phone *</label>
-                                        <input type="tel" name="phone" id="phone" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
-                                        <input type="email" name="email" id="email" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="fideProfile" className="block text-sm font-medium text-gray-300 mb-2">FIDE Profile</label>
-                                        <input type="url" name="fideProfile" id="fideProfile" placeholder="e.g. https://ratings.fide.com/profile/..." className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="resumeFile" className="block text-sm font-medium text-gray-300 mb-2">Resume / CV *</label>
-                                        <input type="file" name="resumeFile" id="resumeFile" required accept=".pdf,.doc,.docx,.txt" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
-                                    </div>
+                           <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                                <div className="text-center mb-12">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
+                                    <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+                                        Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
+                                    </p>
                                 </div>
-                                <div className="mt-8">
-                                    <button type="submit" disabled={isLoading} className="w-full md:w-auto cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center">
-                                        {isLoading ? <Spinner color="text-gray-900" /> : 'Submit Application'}
-                                    </button>
+                                <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
+                                    <form ref={formRef} onSubmit={handleSubmit}>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">First Name *</label>
+                                                <input type="text" name="firstName" id="firstName" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                            </div>
+                                            <div>
+                                                <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">Last Name *</label>
+                                                <input type="text" name="lastName" id="lastName" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">Phone *</label>
+                                                <input type="tel" name="phone" id="phone" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                                                <input type="email" name="email" id="email" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label htmlFor="fideProfile" className="block text-sm font-medium text-gray-300 mb-2">FIDE Profile</label>
+                                                <input type="url" name="fideProfile" id="fideProfile" placeholder="e.g. https://ratings.fide.com/profile/..." className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label htmlFor="resumeFile" className="block text-sm font-medium text-gray-300 mb-2">Resume / CV *</label>
+                                                <input type="file" name="resumeFile" id="resumeFile" required accept=".pdf,.doc,.docx,.txt" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
+                                            </div>
+                                        </div>
+                                        <div className="mt-8">
+                                            <button type="submit" disabled={isLoading} className="w-full md:w-auto cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center">
+                                                {isLoading ? <Spinner color="text-gray-900" /> : 'Submit Application'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                     {status.message && <div className={`mt-6 text-center text-sm ${statusColor}`}>{status.message}</div>}
                                 </div>
-                            </form>
-                             {status.message && <div className={`mt-6 text-center text-sm ${statusColor}`}>{status.message}</div>}
-                        </div>
-                    </div>
+                           </div>
                 </div>
             </section>
         </main>
@@ -574,6 +593,7 @@ const ContactPage = () => (
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Contact Us</h2>
+                        <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We are here to help you get started on your chess journey.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         {/* India Office */}
@@ -587,7 +607,7 @@ const ContactPage = () => (
                                 Contact us: <a href="tel:+919876543210" className="text-amber-400 hover:underline">+91-98765 43210</a>
                             </p>
                             <p className="text-gray-300 mt-2">
-                                Email: <a href="mailto:support.in@radiancechessacademy.com" className="text-amber-400 hover:underline">support.in@radiancechessacademy.com</a>
+                                Email: <a href="mailto:support.in@radiancechessacademy.com" className="text-amber-400 hover:underline break-all">support.in@radiancechessacademy.com</a>
                             </p>
                         </div>
                         {/* US Office */}
@@ -601,7 +621,7 @@ const ContactPage = () => (
                                 Contact us: <a href="tel:+13025550199" className="text-amber-400 hover:underline">+1 (302) 555-0199</a>
                             </p>
                             <p className="text-gray-300 mt-2">
-                                Email: <a href="mailto:support.us@radiancechessacademy.com" className="text-amber-400 hover:underline">support.us@radiancechessacademy.com</a>
+                                Email: <a href="mailto:support.us@radiancechessacademy.com" className="text-amber-400 hover:underline break-all">support.us@radiancechessacademy.com</a>
                             </p>
                         </div>
                     </div>
@@ -808,13 +828,13 @@ const AdminPage = () => {
     };
 
     const handleDeletePost = async (postId) => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            try {
-                await deleteDoc(doc(db, "posts", postId));
-            } catch (error) {
-                console.error("Error deleting post:", error);
-                alert("Could not delete the post.");
-            }
+        // Using console for confirmation as window.confirm is not allowed
+        console.log(`Attempting to delete post ${postId}. Confirm this action.`); 
+        try {
+            await deleteDoc(doc(db, "posts", postId));
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            console.error("Error: Could not delete the post."); 
         }
     };
 
@@ -857,35 +877,35 @@ const AdminPage = () => {
                     <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 border border-gray-700">
                          <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Create "Star of the Month"</h2>
                          <form ref={formRef} onSubmit={handleCreatePost}>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">Month</label>
-                                        <select name="month" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                            <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
-                                            <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">Year</label>
-                                        <input name="year" type="number" defaultValue={new Date().getFullYear()} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    </div>
-                                </div>
-                                <textarea name="summary" placeholder="Short Summary for the blog grid" required rows="3" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                <input name="studentName" type="text" placeholder="Student's Name (e.g., Aarav S.)" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                <div>
-                                    <label className="text-sm font-medium text-gray-300 mb-2 block">Student's Photo *</label>
-                                    <input name="studentImageFile" type="file" required accept="image/*" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
-                                </div>
-                                <textarea name="studentBio" placeholder="Student's Bio / Story" required rows="5" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                <textarea name="parentFeedback" placeholder="Parent's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                <textarea name="coachFeedback" placeholder="Coach's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                <button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg transition flex items-center justify-center">
-                                    {isSubmitting ? <Spinner color="text-gray-900"/> : 'Publish Post'}
-                                </button>
-                                {status.message && <p className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</p>}
-                            </div>
-                         </form>
+                             <div className="space-y-4">
+                                 <div className="grid grid-cols-2 gap-4">
+                                     <div>
+                                         <label className="block text-sm font-medium text-gray-300 mb-2">Month</label>
+                                         <select name="month" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                             <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
+                                             <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
+                                         </select>
+                                     </div>
+                                     <div>
+                                         <label className="block text-sm font-medium text-gray-300 mb-2">Year</label>
+                                         <input name="year" type="number" defaultValue={new Date().getFullYear()} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                     </div>
+                                 </div>
+                                 <textarea name="summary" placeholder="Short Summary for the blog grid" required rows="3" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <input name="studentName" type="text" placeholder="Student's Name (e.g., Aarav S.)" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                 <div>
+                                     <label className="text-sm font-medium text-gray-300 mb-2 block">Student's Photo *</label>
+                                     <input name="studentImageFile" type="file" required accept="image/*" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
+                                 </div>
+                                 <textarea name="studentBio" placeholder="Student's Bio / Story" required rows="5" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <textarea name="parentFeedback" placeholder="Parent's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <textarea name="coachFeedback" placeholder="Coach's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg transition flex items-center justify-center">
+                                     {isSubmitting ? <Spinner color="text-gray-900"/> : 'Publish Post'}
+                                 </button>
+                                 {status.message && <p className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</p>}
+                             </div>
+                          </form>
                     </div>
 
                     {/* Manage Posts */}
@@ -912,12 +932,22 @@ const AdminPage = () => {
 
 // --- Main App Component ---
 
+const getInitialPage = () => {
+    // Determine the initial page based on the URL path
+    return window.location.pathname === '/admin' ? 'admin' : 'home';
+};
+
 export default function App() {
-    const [page, setPage] = useState('home');
+    const [page, setPage] = useState(getInitialPage);
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [page]);
+
+    useEffect(() => {
+        setVisible(true);
+    }, []);
 
     const renderPage = () => {
         switch (page) {
@@ -931,13 +961,13 @@ export default function App() {
                 return <AdminPage />;
             case 'home':
             default:
-                return <HomePage />;
+                return <HomePage setPage={setPage} />;
         }
     };
 
     return (
-        <div className="bg-gray-900 text-white min-h-screen flex flex-col" style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=2070&auto=format&fit=crop')`,
+        <div className={`bg-gray-900 text-white min-h-screen flex flex-col transition-opacity duration-1000 ease-in ${visible ? 'opacity-100' : 'opacity-0'}`} style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=2070&auto-format&fit=crop')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
