@@ -58,9 +58,9 @@ const Header = ({ setPage }) => {
 
     return (
         <header className="bg-gray-900/70 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-700">
-            <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                <a onClick={() => handleNavClick('home')} className="cursor-pointer text-xl sm:text-2xl font-bold text-amber-400 flex items-center">
-                    <Crown className="mr-2" size={28} />
+            <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+                <a onClick={() => handleNavClick('home')} className="cursor-pointer text-lg sm:text-2xl font-bold text-amber-400 flex items-center">
+                    <Crown className="mr-2 h-6 w-6 sm:h-7 sm:w-7" />
                     Radiance Chess Academy
                 </a>
                 <nav className="hidden md:flex items-center space-x-6">
@@ -71,10 +71,10 @@ const Header = ({ setPage }) => {
                     ))}
                 </nav>
                 <div className="flex items-center">
-                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-6 rounded-lg">
-                        Book FREE Trial Class
+                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base">
+                        Book FREE Trial
                     </a>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-4 p-2 text-gray-400 hover:text-white">
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white">
                         {isMobileMenuOpen ? <X /> : <Menu />}
                     </button>
                 </div>
@@ -242,7 +242,7 @@ const HomePage = ({ setPage }) => {
         const post = selectedPost;
         const postDate = post.createdAt?.toDate ? post.createdAt.toDate() : new Date();
         return (
-             <div className="container mx-auto px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
+             <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                 <button onClick={() => setView('allPosts')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8">
                     <ArrowLeft className="mr-2 h-5 w-5" /> Back to All Posts
                 </button>
@@ -272,7 +272,7 @@ const HomePage = ({ setPage }) => {
     
     if (view === 'allPosts') {
         return (
-            <div className="container mx-auto px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
+            <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                 <div className="flex justify-between items-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold text-white">All "Star of the Month" Posts</h2>
                     <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300">
@@ -291,7 +291,7 @@ const HomePage = ({ setPage }) => {
     return (
         <main>
             <section className="py-20 md:py-32">
-                 <div className="container mx-auto px-6 text-center bg-gray-900/50 backdrop-blur-sm rounded-2xl py-24 border border-gray-700">
+                 <div className="container mx-auto px-4 sm:px-6 text-center bg-gray-900/50 backdrop-blur-sm rounded-2xl py-16 sm:py-24 border border-gray-700">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight">
                         Unlock Your Child's <span className="text-amber-400">Genius</span> with Chess
                     </h1>
@@ -307,7 +307,7 @@ const HomePage = ({ setPage }) => {
             </section>
             
             <section id="achievements" className="py-20">
-                <div className="container mx-auto px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
@@ -317,7 +317,7 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="features" className="py-20">
-                <div className="container mx-auto px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Radiance Chess Academy?</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We provide a world-class learning environment to nurture the champion in your child.</p>
@@ -336,7 +336,7 @@ const HomePage = ({ setPage }) => {
             <TrialForm />
 
             <section id="blog" className="py-20">
-                 <div className="container mx-auto px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                 <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
@@ -355,7 +355,7 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="faq" className="py-20">
-                <div className="container mx-auto px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                      <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
                      <div className="space-y-4">
                         <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
@@ -420,7 +420,7 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
 
     return (
         <section id="enroll" className="py-20">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-4 sm:px-6">
                  <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
                     <div className="lg:w-1/2 text-center lg:text-left">
                          <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
@@ -516,7 +516,7 @@ const HiringPage = () => {
     return (
         <main className="py-20">
             <section id="hiring">
-                <div className="container mx-auto px-6 max-w-4xl">
+                <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                      <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
@@ -570,7 +570,7 @@ const HiringPage = () => {
 const ContactPage = () => (
      <main className="py-20">
         <section id="contact">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-4 sm:px-6">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Contact Us</h2>
@@ -618,25 +618,22 @@ const ContactPage = () => (
 
 const TimedPopup = ({ page }) => {
     const [isVisible, setIsVisible] = useState(false);
-    const [isShowing, setIsShowing] = useState(false);
 
     useEffect(() => {
-        if (page === 'admin' || sessionStorage.getItem('popupShown')) {
+        if (page !== 'home' || sessionStorage.getItem('popupShown')) {
             return;
         }
 
         const timer = setTimeout(() => {
             setIsVisible(true);
-            setTimeout(() => setIsShowing(true), 50);
             sessionStorage.setItem('popupShown', 'true');
-        }, 5000);
+        }, 5000); // 5 seconds
 
         return () => clearTimeout(timer);
     }, [page]);
     
     const closePopup = () => {
-        setIsShowing(false);
-        setTimeout(() => setIsVisible(false), 300);
+        setIsVisible(false);
     };
 
     if (!isVisible) return null;
@@ -645,12 +642,12 @@ const TimedPopup = ({ page }) => {
         <div 
             id="timed-popup" 
             onClick={closePopup}
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity duration-300 ${isShowing ? 'opacity-100' : 'opacity-0'}`}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
         >
             <div 
                 id="popup-panel" 
                 onClick={(e) => e.stopPropagation()}
-                className={`relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg p-8 transition-all duration-300 ${isShowing ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+                className="relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg p-8"
             >
                 <button onClick={closePopup} className="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                     <X />
@@ -665,7 +662,7 @@ const TimedPopup = ({ page }) => {
 const TermsPage = () => (
     <main className="py-20">
         <section id="terms">
-            <div className="container mx-auto px-6 max-w-4xl">
+            <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
                     <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms, Conditions, and Policies</h2>
                     
@@ -827,7 +824,7 @@ const AdminPage = () => {
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center px-4">
                 <div className="bg-gray-800/80 backdrop-blur-md border border-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-md">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold text-amber-400">Admin Login</h1>
@@ -849,7 +846,7 @@ const AdminPage = () => {
 
     return (
         <main className="py-12">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-4 sm:px-6">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
                     <button onClick={handleLogout} className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg">Logout</button>
@@ -951,7 +948,7 @@ export default function App() {
             </div>
             <Footer setPage={setPage} />
             <WhatsAppButton />
-            {page !== 'admin' && <TimedPopup page={page} />}
+            <TimedPopup page={page} />
         </div>
     );
 }
