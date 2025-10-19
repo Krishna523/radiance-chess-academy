@@ -307,7 +307,7 @@ const HomePage = ({ setPage }) => {
             </section>
             
             <section id="achievements" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
@@ -317,7 +317,7 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="features" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Radiance Chess Academy?</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We provide a world-class learning environment to nurture the champion in your child.</p>
@@ -336,7 +336,7 @@ const HomePage = ({ setPage }) => {
             <TrialForm />
 
             <section id="blog" className="py-20">
-                 <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                 <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
@@ -355,7 +355,7 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="faq" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                      <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
                      <div className="space-y-4">
                         <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
@@ -421,7 +421,7 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
     return (
         <section id="enroll" className="py-20">
             <div className="container mx-auto px-4 sm:px-6">
-                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
+                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
                     <div className="lg:w-1/2 text-center lg:text-left">
                          <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
                          <p className="mt-4 text-gray-300 text-lg">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
@@ -432,7 +432,7 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
                          </div>
                     </div>
                     <div className="lg:w-1/2 mt-10 lg:mt-0">
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700">
+                        <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
                             <h3 className="text-2xl font-bold text-center text-white mb-6">Fill in The Details to Enroll</h3>
                             <form ref={formRef} onSubmit={handleSubmit}>
                                 <div className="space-y-5">
@@ -517,14 +517,14 @@ const HiringPage = () => {
         <main className="py-20">
             <section id="hiring">
                 <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-                     <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                     <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
                             <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
                                 Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
                             </p>
                         </div>
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700">
+                        <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
                             <form ref={formRef} onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -571,7 +571,7 @@ const ContactPage = () => (
      <main className="py-20">
         <section id="contact">
             <div className="container mx-auto px-4 sm:px-6">
-                <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Contact Us</h2>
                     </div>
@@ -620,7 +620,7 @@ const TimedPopup = ({ page }) => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (page !== 'home' || sessionStorage.getItem('popupShown')) {
+        if (page === 'admin' || sessionStorage.getItem('popupShown')) {
             return;
         }
 
@@ -663,7 +663,7 @@ const TermsPage = () => (
     <main className="py-20">
         <section id="terms">
             <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-                <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-gray-700">
+                <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms, Conditions, and Policies</h2>
                     
                     <div className="space-y-8 text-gray-300">
