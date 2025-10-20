@@ -36,6 +36,15 @@ const auth = getAuth(app);
 
 const Header = ({ setPage }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 10);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleNavClick = (page, anchor = '') => {
         setPage(page);
@@ -57,10 +66,10 @@ const Header = ({ setPage }) => {
     ];
 
     return (
-        <header className="bg-gray-900/70 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-700">
-            <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+        <header className={`sticky top-0 z-40 border-b border-gray-700 transition-all duration-300 ${scrolled ? 'bg-gray-900/95 backdrop-blur-xl shadow-lg' : 'bg-gray-900/70 backdrop-blur-lg'}`}>
+            <div className={`container mx-auto px-4 sm:px-6 flex justify-between items-center transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
                 <a onClick={() => handleNavClick('home')} className="cursor-pointer text-lg sm:text-2xl font-bold text-amber-400 flex items-center">
-                    <Crown className="mr-2 h-6 w-6 sm:h-7 sm:w-7" />
+                    <img src="/icon.png" alt="Radiance Chess Academy Logo" className={`mr-3 rounded-full object-cover transition-all duration-300 ${scrolled ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-10 w-10 sm:h-12 sm:w-12'}`} />
                     Radiance Chess Academy
                 </a>
                 <nav className="hidden md:flex items-center space-x-6">
@@ -301,15 +310,15 @@ const HomePage = ({ setPage }) => {
 
     return (
         <main>
-            <section className="py-20 md:py-32">
+            <section className="py-20 md:py-32" data-aos="fade-in" data-aos-duration="1000">
                  <div className="container mx-auto px-4 sm:px-6 text-center bg-gray-900/50 backdrop-blur-sm rounded-2xl py-16 sm:py-24 border border-gray-700">
-                    <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight">
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight" data-aos="fade-up" data-aos-duration="1000">
                         Unlock Your Child's <span className="text-amber-400">Genius</span> with Chess
                     </h1>
-                    <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                    <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
                         Join our fun & interactive online classes for kids aged 5-16. Our FIDE-rated coaches are here to guide your child from their first move to checkmate.
                     </p>
-                    <div className="mt-10">
+                    <div className="mt-10" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
                         <a href="#enroll" className="nav-link cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-10 rounded-lg text-lg">
                             Enroll for a FREE Trial Class
                         </a>
@@ -318,7 +327,7 @@ const HomePage = ({ setPage }) => {
             </section>
             
             <section id="achievements" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700" data-aos="zoom-in" data-aos-duration="1000">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
@@ -328,18 +337,18 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="features" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700" data-aos="fade-up" data-aos-duration="1000">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Radiance Chess Academy?</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We provide a world-class learning environment to nurture the champion in your child.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BookOpenCheck className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Structured Curriculum</h3><p className="text-gray-400">A comprehensive syllabus designed by experts for all levels, from beginner to advanced.</p></div>
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Users className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Small Group Classes</h3><p className="text-gray-400">Personalized attention guaranteed with a maximum of 6 students per batch.</p></div>
-                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
-                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BarChart3 className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Performance Tracking</h3><p className="text-gray-400">Regular progress reports and feedback sessions to monitor your child's growth.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BookOpenCheck className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Structured Curriculum</h3><p className="text-gray-400">A comprehensive syllabus designed by experts for all levels, from beginner to advanced.</p></div>
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Users className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Small Group Classes</h3><p className="text-gray-400">Personalized attention guaranteed with a maximum of 6 students per batch.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
+                          <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="500"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="600"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BarChart3 className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Performance Tracking</h3><p className="text-gray-400">Regular progress reports and feedback sessions to monitor your child's growth.</p></div>
                     </div>
                 </div>
             </section>
@@ -347,7 +356,7 @@ const HomePage = ({ setPage }) => {
             <TrialForm />
 
             <section id="blog" className="py-20">
-                 <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                 <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700" data-aos="fade-up" data-aos-duration="1000">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
@@ -355,8 +364,8 @@ const HomePage = ({ setPage }) => {
 
                     {blogPosts.length > 0 ? (
                         <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
-                           {blogPosts.slice(0, 3).map((post) => (
-                               <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center">
+                           {blogPosts.slice(0, 3).map((post, index) => (
+                               <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center" data-aos="fade-up" data-aos-duration="1000" data-aos-delay={index * 100}>
                                     <PostCard post={post} onCardClick={handleViewDetail}/>
                                </div>
                            ))}
@@ -366,7 +375,7 @@ const HomePage = ({ setPage }) => {
                     )}
 
                     {blogPosts.length > 3 && (
-                        <div className="text-center mt-12">
+                        <div className="text-center mt-12" data-aos="fade-up" data-aos-duration="1000">
                             <button onClick={() => setView('allPosts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg">View All Posts</button>
                         </div>
                     )}
@@ -374,13 +383,13 @@ const HomePage = ({ setPage }) => {
             </section>
 
              <section id="faq" className="py-20">
-                <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700" data-aos="fade-up" data-aos-duration="1000">
                          <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
                          <div className="space-y-4">
-                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
-                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What if my child misses a class?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We understand that schedules can be busy. We offer compensatory classes that can be scheduled at your convenience, subject to availability. All our sessions are also recorded and made available on the student portal.</p></details>
-                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
-                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What if my child misses a class?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We understand that schedules can be busy. We offer compensatory classes that can be scheduled at your convenience, subject to availability. All our sessions are also recorded and made available on the student portal.</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
+                              <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
                          </div>
                 </div>
             </section>
@@ -440,7 +449,7 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
     return (
         <section id="enroll" className="py-20">
             <div className="container mx-auto px-4 sm:px-6">
-                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
+                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10" data-aos="flip-left" data-aos-duration="1000">
                     <div className="lg:w-1/2 text-center lg:text-left">
                           <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
                           <p className="mt-4 text-gray-300 text-lg">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
@@ -533,7 +542,7 @@ const HiringPage = () => {
     const statusColor = status.type === 'success' ? 'text-green-400' : 'text-red-400';
 
     return (
-        <main className="py-20">
+        <main className="py-20" data-aos="fade-in" data-aos-duration="1000">
             <section id="hiring">
                 <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                            <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
@@ -587,7 +596,7 @@ const HiringPage = () => {
 };
 
 const ContactPage = () => (
-     <main className="py-20">
+     <main className="py-20" data-aos="fade-in" data-aos-duration="1000">
         <section id="contact">
             <div className="container mx-auto px-4 sm:px-6">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
@@ -597,7 +606,7 @@ const ContactPage = () => (
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         {/* India Office */}
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center" data-aos="fade-right" data-aos-duration="1000">
                             <img src="https://flagcdn.com/w160/in.png" alt="Indian Flag" className="w-20 h-auto mx-auto mb-6 rounded-md"/>
                             <h3 className="text-xl font-bold text-white mb-2">INDIA - HEADQUARTERS</h3>
                             <p className="text-gray-400">
@@ -611,7 +620,7 @@ const ContactPage = () => (
                             </p>
                         </div>
                         {/* US Office */}
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center" data-aos="fade-left" data-aos-duration="1000">
                             <img src="https://flagcdn.com/w160/us.png" alt="USA Flag" className="w-20 h-auto mx-auto mb-6 rounded-md"/>
                             <h3 className="text-xl font-bold text-white mb-2">UNITED STATES</h3>
                             <p className="text-gray-400">
@@ -656,18 +665,18 @@ const TimedPopup = ({ page }) => {
         setIsVisible(false);
     };
 
-    if (!isVisible) return null;
-
     return (
         <div 
             id="timed-popup" 
             onClick={closePopup}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300
+                ${isVisible ? 'bg-black/70 backdrop-blur-sm opacity-100' : 'bg-transparent backdrop-blur-none opacity-0 pointer-events-none'}`}
         >
             <div 
                 id="popup-panel" 
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg p-8"
+                className={`relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg p-8 transition-all duration-300
+                    ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             >
                 <button onClick={closePopup} className="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                     <X />
@@ -680,14 +689,14 @@ const TimedPopup = ({ page }) => {
 };
 
 const TermsPage = () => (
-    <main className="py-20">
+    <main className="py-20" data-aos="fade-in" data-aos-duration="1000">
         <section id="terms">
             <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms, Conditions, and Policies</h2>
                     
                     <div className="space-y-8 text-gray-300">
-                        <div>
+                        <div data-aos="fade-up" data-aos-duration="1000">
                             <h3 className="text-2xl font-semibold text-amber-400 mb-3">1. Terms and Conditions</h3>
                             <p className="mb-4">Welcome to Radiance Chess Academy! By using our services, you agree to the following terms:</p>
                              <ul className="list-disc list-inside space-y-2 pl-4">
@@ -698,7 +707,7 @@ const TermsPage = () => (
                             </ul>
                         </div>
                         
-                        <div>
+                        <div data-aos="fade-up" data-aos-duration="1000">
                             <h3 className="text-2xl font-semibold text-amber-400 mb-3">2. Privacy Policy</h3>
                             <p className="mb-4">At Radiance Chess Academy, we prioritize your privacy.</p>
                              <ul className="list-disc list-inside space-y-2 pl-4">
@@ -709,7 +718,7 @@ const TermsPage = () => (
                             <p className="mt-4">For any queries related to data privacy, contact us at <a href="mailto:chesscoaching@radiancechessacademy.com" className="text-amber-300 hover:underline">chesscoaching@radiancechessacademy.com</a>.</p>
                         </div>
                         
-                        <div>
+                        <div data-aos="fade-up" data-aos-duration="1000">
                             <h3 className="text-2xl font-semibold text-amber-400 mb-3">3. Refund and Cancellation Policy</h3>
                             <p className="mb-4">We strive to provide the best experience for our students. However, in certain cases, refunds or cancellations may be required:</p>
                              <ul className="list-disc list-inside space-y-2 pl-4">
@@ -719,7 +728,7 @@ const TermsPage = () => (
                             <p className="mt-4">For cancellations, contact us at <a href="mailto:chesscoaching@radiancechessacademy.com" className="text-amber-300 hover:underline">chesscoaching@radiancechessacademy.com</a>.</p>
                         </div>
 
-                        <div>
+                        <div data-aos="fade-up" data-aos-duration="1000">
                             <h3 className="text-2xl font-semibold text-amber-400 mb-3">4. Shipping/Delivery Policy</h3>
                             <p className="mb-4">As our services are fully online, no physical shipping is required.</p>
                             <ul className="list-disc list-inside space-y-2 pl-4">
@@ -942,7 +951,34 @@ export default function App() {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
+        // Add AOS CSS
+        const link = document.createElement('link');
+        link.href = 'https://unpkg.com/aos@2.3.1/dist/aos.css';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+
+        // Add AOS JS
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/aos@2.3.1/dist/aos.js';
+        script.onload = () => {
+            if (window.AOS) {
+                window.AOS.init({ once: true });
+            }
+        };
+        document.body.appendChild(script);
+
+        return () => {
+            document.head.removeChild(link);
+            document.body.removeChild(script);
+        };
+    }, []);
+
+
+    useEffect(() => {
         window.scrollTo(0, 0);
+        if (window.AOS) {
+            window.AOS.refresh();
+        }
     }, [page]);
 
     useEffect(() => {
