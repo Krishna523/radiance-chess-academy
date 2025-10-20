@@ -6,15 +6,24 @@ import emailjs from 'https://esm.sh/@emailjs/browser@4';
 import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 
 // --- IMPORTANT: CONFIGURATION ---
-const firebaseConfig = {
-    apiKey: "AIzaSyCENrpQULXNNnSlrQqQZLpeebLmiodmoUQ",
-    authDomain: "radiance-chess-academy.firebaseapp.com",
-    projectId: "radiance-chess-academy",
-    storageBucket: "radiance-chess-academy.appspot.com",
-    messagingSenderId: "1031021894893",
-    appId: "1:1031021894893:web:0c92b0ce59cdd1906980e4",
-};
+// const firebaseConfig = {
+//     apiKey: "AIzaSyCENrpQULXNNnSlrQqQZLpeebLmiodmoUQ",
+//     authDomain: "radiance-chess-academy.firebaseapp.com",
+//     projectId: "radiance-chess-academy",
+//     storageBucket: "radiance-chess-academy.appspot.com",
+//     messagingSenderId: "1031021894893",
+//     appId: "1:1031021894893:web:0c92b0ce59cdd1906980e4",
+// };
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCUhR2MC0zIPSlhf6bJBLFLoAOzHKb7Oq8",
+  authDomain: "radiancechessacademy.firebaseapp.com",
+  projectId: "radiancechessacademy",
+  storageBucket: "radiancechessacademy.firebasestorage.app",
+  messagingSenderId: "255982374775",
+  appId: "1:255982374775:web:3842c99fb81f311fee9b72",
+  measurementId: "G-3DWWQD418Q"
+};
 const EMAILJS_TRIAL_TEMPLATE_ID = "template_3ehexpg";
 const EMAILJS_HIRING_TEMPLATE_ID = "template_4am0nkl";
 const EMAILJS_SERVICE_ID = "service_6m0xl0h";
