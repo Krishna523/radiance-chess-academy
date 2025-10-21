@@ -14,14 +14,17 @@ const firebaseConfig = {
   messagingSenderId: "1031021894893",
   appId: "1:1031021894893:web:0c92b0ce59cdd1906980e4"
 };
-
-const EMAILJS_TRIAL_TEMPLATE_ID = "template_vrkd0db";
-const EMAILJS_HIRING_TEMPLATE_ID = "template_vbtem3p";
 const EMAILJS_SERVICE_ID = "service_iooou0l";
+const EMAILJS_TRIAL_TEMPLATE_ID = "template_vrkd0db";
 const EMAILJS_PUBLIC_KEY = "NWt6wW2tYX6CFDqYx";
+
+const EMAILJS_SERVICE_ID_HIRING = "service_tjf2rtr"
+const EMAILJS_HIRING_TEMPLATE_ID = "template_solc2oq";
+const EMAILJS_PUBLIC_KEY_Hiring = "tKP4mOD4yD6bjcn1R";
 
 const CLOUDINARY_CLOUD_NAME = "dknf3a0pt";
 const CLOUDINARY_UPLOAD_PRESET = "kjmp2cvx";
+
 
 const WHATSAPP_PHONE_NUMBER = "919342678754";
 const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
@@ -583,7 +586,7 @@ const HiringPage = () => {
                 resumeUrl: data.secure_url
             };
 
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_HIRING_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY);
+            await emailjs.send(EMAILJS_SERVICE_ID_HIRING, EMAILJS_HIRING_TEMPLATE_ID , templateParams,EMAILJS_PUBLIC_KEY_Hiring );
 
             setStatus({ message: 'Thank you! Your application has been sent.', type: 'success' });
             formRef.current.reset();
