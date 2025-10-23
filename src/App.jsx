@@ -202,19 +202,6 @@ const Footer = ({ setPage }) => {
     );
 };
 
-// const WhatsAppButton = () => {
-//     const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`;
-//     return (
-//         <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 group flex items-center">
-//             <span className="absolute right-20 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
-//                 Contact Us
-//             </span>
-//             <div className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-45">
-//                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.523-5.587-1.474l-6.355 1.666z"/></svg>
-//             </div>
-//         </a>
-//     );
-// };
 const WhatsAppButton = () => {
     const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`;
     
@@ -897,7 +884,7 @@ const TimedPopup = ({ page }) => {
         const timer = setTimeout(() => {
             setIsVisible(true);
             sessionStorage.setItem('popupShown', 'true');
-        }, 5000); // 5 seconds
+        }, 10000); // 5 seconds
 
         return () => clearTimeout(timer);
     }, [page]);
