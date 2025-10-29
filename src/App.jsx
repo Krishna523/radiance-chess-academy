@@ -407,17 +407,7 @@ const HomePage = ({ view, setView }) => {
             </section>
 
             {/* Achievements Section */}
-            <AnimatedSection>
-                <section id="achievements" className="py-20">
-                    <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                        <div className="text-center mb-8">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
-                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
-                        </div>
-                        <ImageSlideshow />
-                    </div>
-                </section>
-            </AnimatedSection>
+        
 
             {/* --- NEW ORDER: Why Choose Chess? Section --- */}
             <AnimatedSection>
@@ -528,8 +518,25 @@ const HomePage = ({ view, setView }) => {
                 </section>
             </AnimatedSection>
 
+              {/* Achievements Section */}
+                <AnimatedSection>
+                <section id="achievements" className="py-20">
+                    <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
+                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
+                        </div>
+                        <ImageSlideshow />
+                    </div>
+                </section>
+            </AnimatedSection>
+
             {/* Final CTA Section */}
             <FinalCTA />
+
+
+
+          
 
             {/* FAQ Section */}
             <AnimatedSection>
