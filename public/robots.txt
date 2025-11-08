@@ -1,0 +1,12 @@
+Allow all friendly search engine bots
+
+User-agent: *
+Allow: /
+
+Disallow bots from crawling the admin page
+
+Disallow: /admin
+
+Point all bots to the sitemap (Updated with your new domain)
+
+Sitemap: https://www.google.com/search?q=https://www.radiancechessacademy.com/sitemap.xml
