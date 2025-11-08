@@ -7,6 +7,6 @@ Disallow bots from crawling the admin page
 
 Disallow: /admin
 
-Point all bots to the sitemap (Updated with your new domain)
+Point all bots to the sitemap (Corrected Link)
 
 Sitemap: https://www.google.com/search?q=https://www.radiancechessacademy.com/sitemap.xml
