@@ -26,7 +26,7 @@ const CLOUDINARY_CLOUD_NAME = "dknf3a0pt";
 const CLOUDINARY_UPLOAD_PRESET = "kjmp2cvx";
 
 
-const WHATSAPP_PHONE_NUMBER = "919342678754";
+const WHATSAPP_PHONE_NUMBER = "17325682619";
 const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
 
 // --- Initialize Firebase ---
@@ -118,7 +118,7 @@ const Header = ({ setPage, setHomeView }) => {
         { name: 'Blog', page: 'home', anchor: '#blog' },
         { name: 'Coach Hiring', page: 'hiring' },
         { name: 'Contact', page: 'contact' },
-        { name: 'Terms', page: 'terms' },
+        { name: 'Terms&Policies', page: 'terms' },
         { name: 'FAQ', page: 'home', anchor: '#faq' },
     ];
 
@@ -186,16 +186,16 @@ const Footer = ({ setPage }) => {
                         <p className="text-gray-400 mt-2">Nurturing the next generation of chess champions.</p>
                     </div>
                     <div className="flex justify-center space-x-6 mt-4 md:mt-0">
-                        <a href="#" className="text-gray-400 hover:text-white"><Facebook /></a>
-                        <a href="#" className="text-gray-400 hover:text-white"><Twitter /></a>
-                        <a href="#" className="text-gray-400 hover:text-white"><Instagram /></a>
-                        <a href="#" className="text-gray-400 hover:text-white"><Youtube /></a>
+                        <a href="https://www.facebook.com/share/1BYErEka53/" className="text-gray-400 hover:text-white"><Facebook /></a>
+                        {/* <a href="#" className="text-gray-400 hover:text-white"><Twitter /></a> */}
+                        <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" className="text-gray-400 hover:text-white"><Instagram /></a>
+                        {/* <a href="#" className="text-gray-400 hover:text-white"><Youtube /></a> */}
                     </div>
                 </div>
                  <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm flex flex-col sm:flex-row justify-center items-center gap-x-4 gap-y-2">
                     <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
                     <span className="hidden sm:inline">|</span>
-                    <a onClick={() => setPage('terms')} className="cursor-pointer hover:text-white transition">Terms & Conditions</a>
+                    <a onClick={() => setPage('terms')} className="cursor-pointer hover:text-white transition">Terms & Policies</a>
                 </div>
             </div>
         </footer>
@@ -768,7 +768,23 @@ const ContactPage = () => (
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We are here to help you get started on your chess journey.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {/* India Office */}
+               
+                        {/* US Office */}
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
+                            <img src="https://flagcdn.com/w160/us.png" alt="USA Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x85/1f2937/a855f7?text=US+Flag"; }}/>
+                            <h3 className="text-xl font-bold text-white mb-2">UNITED STATES</h3>
+                            <p className="text-gray-400">
+                                Radiance Chess Academy USA, <br/>
+500 w Madison Street, Chicago, IL 60661, <br/>United States.
+                            </p>
+                            <p className="text-gray-300 mt-4">
+                                Contact us: <a href="tel:+17325682619" className="text-amber-400 hover:underline">+1 (732) 568-2619</a>
+                            </p>
+                            <p className="text-gray-300 mt-2">
+                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:underline break-all">radiancechessacademy.online@gmail.com</a>
+                            </p>
+                        </div>
+                                 {/* India Office */}
                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
                             <img src="https://flagcdn.com/w160/in.png" alt="Indian Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x107/1f2937/a855f7?text=IN+Flag"; }}/>
                             <h3 className="text-xl font-bold text-white mb-2">INDIA - HEADQUARTERS</h3>
@@ -778,21 +794,6 @@ const ContactPage = () => (
                             </p>
                             <p className="text-gray-300 mt-4">
                                 Contact us: <a href="tel:+919342678754" className="text-amber-400 hover:underline">+91-93426 78754</a>
-                            </p>
-                            <p className="text-gray-300 mt-2">
-                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:underline break-all">radiancechessacademy.online@gmail.com</a>
-                            </p>
-                        </div>
-                        {/* US Office */}
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
-                            <img src="https://flagcdn.com/w160/us.png" alt="USA Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x85/1f2937/a855f7?text=US+Flag"; }}/>
-                            <h3 className="text-xl font-bold text-white mb-2">UNITED STATES</h3>
-                            <p className="text-gray-400">
-                                Radiance Chess Academy USA, <br/>
-233 S Wacker Dr, Chicago, IL 60606, <br/>United States.
-                            </p>
-                            <p className="text-gray-300 mt-4">
-                                Contact us: <a href="tel:+13025550199" className="text-amber-400 hover:underline">+1 (302) 555-0199</a>
                             </p>
                             <p className="text-gray-300 mt-2">
                                 Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:underline break-all">radiancechessacademy.online@gmail.com</a>
@@ -928,11 +929,11 @@ const TermsPage = () => (
         <section id="terms">
             <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms, Conditions, and Policies</h2>
+                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms and Policies</h2>
 
                     <div className="space-y-8 text-gray-300">
                         <div>
-                            <h3 className="text-2xl font-semibold text-amber-400 mb-3">1. Terms and Conditions</h3>
+                            <h3 className="text-2xl font-semibold text-amber-400 mb-3">1. Terms and Policies</h3>
                             <p className="mb-4">Welcome to Radiance Chess Academy! By using our services, you agree to the following terms:</p>
                              <ul className="list-disc list-inside space-y-2 pl-4">
                                  <li>Classes are conducted online via Zoom or Google Meet.</li>
