@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import emailjs from 'https://esm.sh/@emailjs/browser@4';
-import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Brain, Target } from 'lucide-react'; // Added Brain and Target icons
+import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Brain, Target } from 'lucide-react';
 
 // --- IMPORTANT: CONFIGURATION ---
 const firebaseConfig = {
@@ -42,34 +42,33 @@ const AnimatedSection = ({ children, className = '' }) => {
     const [inView, setInView] = useState(false);
 
     useEffect(() => {
-        let observer; // Define observer outside to access in cleanup
+        let observer;
 
-        const currentRef = ref.current; // Capture ref value
+        const currentRef = ref.current;
 
         if (currentRef) {
             observer = new IntersectionObserver(
                 ([entry]) => {
                     if (entry.isIntersecting) {
                         setInView(true);
-                        if (observer && currentRef) { // Ensure observer and ref exist
-                            observer.unobserve(currentRef); // Animate only once
+                        if (observer && currentRef) {
+                            observer.unobserve(currentRef);
                         }
                     }
                 },
                 {
-                    threshold: 0.1, // Trigger when 10% of the element is visible
+                    threshold: 0.1,
                 }
             );
             observer.observe(currentRef);
         }
 
         return () => {
-            // Cleanup function
-            if (currentRef && observer) { // Ensure observer and ref exist
+            if (currentRef && observer) {
                 observer.unobserve(currentRef);
             }
         };
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
 
     return (
@@ -84,7 +83,7 @@ const AnimatedSection = ({ children, className = '' }) => {
     );
 };
 
-const Header = ({ setPage, setHomeView }) => {
+const Header = ({ setPage, setHomeView, navigate }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -100,7 +99,12 @@ const Header = ({ setPage, setHomeView }) => {
         if (page === 'home') {
             setHomeView('main');
         }
-        setPage(page);
+        // Use the navigate function if provided, otherwise fallback to setPage
+        if (navigate) {
+            navigate(page);
+        } else {
+            setPage(page);
+        }
 
         if (anchor) {
             setTimeout(() => {
@@ -154,9 +158,9 @@ const Header = ({ setPage, setHomeView }) => {
             `}>
                 <div className="py-2">
                     {navLinks.map(link => (
-                         <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
-                             {link.name}
-                         </a>
+                          <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
+                              {link.name}
+                          </a>
                     ))}
                     <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer block py-3 px-6 text-amber-400 font-bold hover:bg-gray-700 transition">
                         Book FREE Trial
@@ -167,19 +171,22 @@ const Header = ({ setPage, setHomeView }) => {
     );
 };
 
-const Footer = ({ setPage }) => {
-    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`;
+const Footer = ({ setPage, navigate }) => {
+    
+    const handleNavClick = (page) => {
+        if(navigate) {
+            navigate(page);
+        } else {
+            setPage(page);
+        }
+    }
 
     return (
         <footer className="bg-gray-900 text-white border-t border-gray-700 mt-auto">
             <div className="container mx-auto px-6 py-8">
-                {/* --- This section was removed as per the previous edit --- */}
-                {/* ... */}
-
                 <div className="md:flex md:justify-between items-center text-center md:text-left">
                     <div className="mb-4 md:mb-0">
-                        <a onClick={() => setPage('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start">
-                            {/* MODIFICATION: Replaced Crown with website icon */}
+                        <a onClick={() => handleNavClick('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start">
                             <img src="/icon.png" alt="Radiance Chess Academy Logo" className="mr-3 h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover" />
                             Radiance Chess Academy
                         </a>
@@ -187,15 +194,13 @@ const Footer = ({ setPage }) => {
                     </div>
                     <div className="flex justify-center space-x-6 mt-4 md:mt-0">
                         <a href="https://www.facebook.com/share/1BYErEka53/" className="text-gray-400 hover:text-white"><Facebook /></a>
-                        {/* <a href="#" className="text-gray-400 hover:text-white"><Twitter /></a> */}
                         <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" className="text-gray-400 hover:text-white"><Instagram /></a>
-                        {/* <a href="#" className="text-gray-400 hover:text-white"><Youtube /></a> */}
                     </div>
                 </div>
                  <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm flex flex-col sm:flex-row justify-center items-center gap-x-4 gap-y-2">
                     <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
                     <span className="hidden sm:inline">|</span>
-                    <a onClick={() => setPage('terms')} className="cursor-pointer hover:text-white transition">Terms & Policies</a>
+                    <a onClick={() => handleNavClick('terms')} className="cursor-pointer hover:text-white transition">Terms & Policies</a>
                 </div>
             </div>
         </footer>
@@ -203,26 +208,17 @@ const Footer = ({ setPage }) => {
 };
 
 const WhatsAppButton = () => {
-    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`;
-    
     return (
-        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 group flex items-center">
+        <a href={`https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_PREDEFINED_MESSAGE)}`} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 group flex items-center">
             <span className="absolute right-20 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
                 Contact Us
             </span>
             <div className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-45">
-                {/*
-                  Here's how you link your downloaded SVG.
-                  1. Place your 'whatsapp-icon.svg' file in your project's 'public' folder.
-                  2. The 'src' path should be relative to that public folder (e.g., '/whatsapp-icon.svg').
-                  3. Added w-8 and h-8 to match the original SVG's 32x32 size.
-                */}
                 <img
-                    src="/icons8-whatsapp.svg" // <-- Change this path if you named it differently
+                    src="/icons8-whatsapp.svg"
                     alt="WhatsApp Icon"
-                    className="w-8 h-8" // 32px = 2rem = w-8/h-8
+                    className="w-8 h-8"
                 />
-                {/* ======================= */}
             </div>
         </a>
     );
@@ -282,7 +278,6 @@ const ImageSlideshow = () => {
                         className="absolute top-0 left-0 w-full h-full rounded-2xl shadow-2xl"
                         style={getSlideStyle(index)}
                     >
-                        {/* Use placeholder image with onerror fallback */}
                         <img
                             src={slide.url}
                             alt={slide.caption}
@@ -305,12 +300,81 @@ const ImageSlideshow = () => {
     );
 };
 
-
 // --- Page Components ---
 
-const HomePage = ({ view, setView }) => {
+// --- NEW COMPONENT: Blog Detail Page (For separate URL) ---
+const BlogDetailPage = ({ id, navigate }) => {
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            if (!id) {
+                setError(true);
+                setLoading(false);
+                return;
+            }
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setPost({ id: docSnap.id, ...docSnap.data() });
+                } else {
+                    setError(true);
+                }
+            } catch (err) {
+                console.error("Error fetching post:", err);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPost();
+    }, [id]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center pt-20"><Spinner /></div>;
+    if (error || !post) return (
+        <div className="min-h-screen flex flex-col items-center justify-center pt-20 text-white">
+            <h2 className="text-2xl mb-4">Post not found</h2>
+            <button onClick={() => navigate('home')} className="text-amber-400 hover:underline">Return to Home</button>
+        </div>
+    );
+
+    return (
+        <main className="py-20 md:py-32">
+            <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
+                <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8">
+                    <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
+                </button>
+                <div className="prose prose-invert prose-lg max-w-none">
+                    <h1 className="text-3xl md:text-5xl font-bold text-white mb-6">{post.title || 'Untitled Post'}</h1>
+                    <p className="text-xl text-gray-300 mb-10">{post.summary || 'No summary available.'}</p>
+                    <div className="mt-12 flex flex-col md:flex-row items-start gap-8 bg-gray-800/80 p-6 rounded-lg border border-gray-700">
+                        <img src={post.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post.studentName || 'Student'}`} className="w-full md:w-1/3 rounded-lg object-cover" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
+                        <div className="w-full md:w-2/3">
+                            <h2 className="text-2xl font-bold text-white mb-4">1. {post.studentName || 'Anonymous Student'}</h2>
+                            <p className="text-gray-300 mb-6">{post.studentBio || 'No biography provided.'}</p>
+                             <div className="mt-6">
+                                <h3 className="text-amber-400 font-semibold text-lg">Parent's Feedback:</h3>
+                                <p className="italic text-gray-400">"{post.parentFeedback || 'No feedback provided.'}"</p>
+                            </div>
+                            <div className="mt-6">
+                                <h3 className="text-amber-400 font-semibold text-lg">Coach feedback on {post.studentName || 'the student'}:</h3>
+                                <p className="italic text-gray-400">"{post.coachFeedback || 'No feedback provided.'}"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+};
+
+const HomePage = ({ view, setView, navigateToPost, navigate }) => {
     const [blogPosts, setBlogPosts] = useState([]);
-    const [selectedPost, setSelectedPost] = useState(null);
 
     useEffect(() => {
         const postsRef = collection(db, "posts");
@@ -321,9 +385,9 @@ const HomePage = ({ view, setView }) => {
         return () => unsubscribe();
     }, []);
 
+    // NOTE: Instead of setting local 'detail' state, we navigate to the blog URL
     const handleViewDetail = (post) => {
-        setSelectedPost(post);
-        setView('detail');
+        navigateToPost(post.id);
     };
 
     const PostCard = ({ post, onCardClick }) => (
@@ -333,55 +397,27 @@ const HomePage = ({ view, setView }) => {
             </div>
             <div className="p-6 flex flex-col flex-grow">
                 <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">{post?.title || 'Untitled Post'}</h3>
-                <p className="mt-2 text-gray-400 text-sm flex-grow">{post?.summary || 'No summary available.'}</p>
+                <p className="mt-2 text-gray-400 text-sm flex-grow line-clamp-3">{post?.summary || 'No summary available.'}</p>
                 <span className="mt-4 text-amber-400 font-semibold inline-flex items-center">Read More <ArrowRight className="ml-2 h-4 w-4" /></span>
             </div>
         </div>
     );
 
-    if (view === 'detail' && selectedPost) {
-        const post = selectedPost;
-        return (
-             <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
-                <button onClick={() => setView('allPosts')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8">
-                    <ArrowLeft className="mr-2 h-5 w-5" /> Back to All Posts
-                </button>
-                <div className="prose prose-invert prose-lg max-w-none">
-                    <h1>{post?.title || 'Untitled Post'}</h1>
-                    <p>{post?.summary || 'No summary available.'}</p>
-                    <div className="mt-12 flex flex-col md:flex-row items-start gap-8 bg-gray-800/80 p-6 rounded-lg border border-gray-700">
-                        <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full md:w-1/3 rounded-lg object-cover" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
-                        <div className="w-full md:w-2/3">
-                            <h2 className="text-white">1. {post?.studentName || 'Anonymous Student'}</h2>
-                            <p>{post?.studentBio || 'No biography provided.'}</p>
-                             <div className="mt-6">
-                                <h3 className="text-amber-400">Parent's Feedback:</h3>
-                                <p className="italic">"{post?.parentFeedback || 'No feedback provided.'}"</p>
-                            </div>
-                            <div className="mt-6">
-                                <h3 className="text-amber-400">Coach feedback on {post?.studentName || 'the student'}:</h3>
-                                <p className="italic">"{post?.coachFeedback || 'No feedback provided.'}"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     if (view === 'allPosts') {
         return (
-            <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
-                <div className="flex justify-between items-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white">All "Star of the Month" Posts</h2>
-                    <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300">
-                        <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
-                    </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {blogPosts.length > 0 ? blogPosts.map((post) => (
-                        <PostCard key={post.id} post={post} onCardClick={handleViewDetail} />
-                    )) : <p className="text-gray-400 col-span-full text-center">No posts yet.</p>}
+            <div className="py-20 md:py-32">
+                 <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
+                    <div className="flex justify-between items-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">All "Star of the Month" Posts</h2>
+                        <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300">
+                            <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {blogPosts.length > 0 ? blogPosts.map((post) => (
+                            <PostCard key={post.id} post={post} onCardClick={handleViewDetail} />
+                        )) : <p className="text-gray-400 col-span-full text-center">No posts yet.</p>}
+                    </div>
                 </div>
             </div>
         )
@@ -406,10 +442,7 @@ const HomePage = ({ view, setView }) => {
                 </div>
             </section>
 
-            {/* Achievements Section */}
-        
-
-            {/* --- NEW ORDER: Why Choose Chess? Section --- */}
+            {/* Why Choose Chess? Section */}
             <AnimatedSection>
                 <section className="py-20">
                      <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
@@ -456,7 +489,7 @@ const HomePage = ({ view, setView }) => {
                 </section>
             </AnimatedSection>
 
-            {/* --- NEW ORDER: Our Purpose Section --- */}
+            {/* Our Purpose Section */}
             <AnimatedSection>
                 <section className="py-20">
                      <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
@@ -533,10 +566,6 @@ const HomePage = ({ view, setView }) => {
 
             {/* Final CTA Section */}
             <FinalCTA />
-
-
-
-          
 
             {/* FAQ Section */}
             <AnimatedSection>
@@ -790,7 +819,7 @@ const ContactPage = () => (
                             <h3 className="text-xl font-bold text-white mb-2">INDIA - HEADQUARTERS</h3>
                             <p className="text-gray-400">
                                 Radiance Chess Academy, <br />
-                                                        Near Tidel Park, Tharamani,<br/> Chennai – 600113, Tamil Nadu, India.
+                                Near Tidel Park, Tharamani,<br/> Chennai – 600113, Tamil Nadu, India.
                             </p>
                             <p className="text-gray-300 mt-4">
                                 Contact us: <a href="tel:+919342678754" className="text-amber-400 hover:underline">+91-93426 78754</a>
@@ -813,15 +842,11 @@ const ContactPage = () => (
         rel="noopener noreferrer"
         className="inline-flex items-center cta-button bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-8 rounded-lg border border-transparent transition-colors duration-300"
       >
-        {/*
-          
-        */}
         <img
-          src="/icons8-whatsapp.svg" // <-- Change this path if you named it differently or put it in a subfolder
+          src="/icons8-whatsapp.svg"
           alt="WhatsApp Icon"
-          className="inline-block mr-2 w-6 h-6" // Kept the spacing and size classes
+          className="inline-block mr-2 w-6 h-6"
         />
-        {/* ======================= */}
         Message us on WhatsApp
       </a>
     </div>
@@ -844,7 +869,7 @@ const FinalCTA = () => {
 
     return (
         <AnimatedSection>
-               <section className="py-20">
+                <section className="py-20">
         {/* Increased max-width */}
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700 text-center shadow-lg">
@@ -861,17 +886,11 @@ const FinalCTA = () => {
               // Changed button color and border to green
               className="inline-flex items-center justify-center cta-button bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors border border-green-600 shadow-lg"
             >
-              {/*
-                Here's how you link your downloaded SVG.
-                1. Place your 'whatsapp-icon.svg' file in your project's 'public' folder.
-                2. The 'src' path should be relative to that public folder (e.g., '/whatsapp-icon.svg').
-              */}
               <img
-                src="/icons8-whatsapp.svg" // <-- Change this path if you named it differently or put it in a subfolder
+                src="/icons8-whatsapp.svg"
                 alt="WhatsApp Icon"
                 className="inline-block mr-2 w-6 h-6" // Added size and spacing
               />
-              {/* ======================= */}
               Contact Us
             </a>
           </div>
@@ -1125,14 +1144,14 @@ const AdminPage = () => {
                          <form ref={formRef} onSubmit={handleCreatePost}>
                              <div className="space-y-4">
                                  <div className="grid grid-cols-2 gap-4">
-                                      <div>
+                                     <div>
                                          <label className="block text-sm font-medium text-gray-300 mb-2">Month</label>
                                          <select name="month" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
                                              <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
                                              <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
                                          </select>
                                      </div>
-                                      <div>
+                                     <div>
                                          <label className="block text-sm font-medium text-gray-300 mb-2">Year</label>
                                          <input name="year" type="number" defaultValue={new Date().getFullYear()} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
                                      </div>
@@ -1179,6 +1198,11 @@ const AdminPage = () => {
 // --- Main App Component ---
 export default function App() {
     const getPageFromPath = (path) => {
+        // Handle blog detail path first
+        if (path.startsWith('/blog/')) {
+            return 'blog-detail';
+        }
+
         const pageName = path.substring(1); // remove leading '/'
         switch (pageName) {
             case 'admin':
@@ -1192,40 +1216,62 @@ export default function App() {
         }
     };
 
-    const [page, setPage] = useState(getPageFromPath(window.location.pathname));
+    const [page, setPage] = useState('home');
+    const [currentPostId, setCurrentPostId] = useState(null);
     const [homeView, setHomeView] = useState('main');
     const [visible, setVisible] = useState(false);
 
-    // Sync state to URL and scroll to top
+    // Initial Load: Parse URL to set initial state
     useEffect(() => {
-        const path = page === 'home' ? '/' : `/${page}`;
-        if (window.location.pathname !== path) {
-            window.history.pushState({}, '', path);
+        const path = window.location.pathname;
+        const initialPage = getPageFromPath(path);
+
+        if (initialPage === 'blog-detail') {
+            const id = path.split('/')[2];
+            setCurrentPostId(id);
         }
+        
+        setPage(initialPage);
+        setVisible(true);
+    }, []);
 
-        // Always scroll to top when the main page changes
-        window.scrollTo(0, 0);
-
-        if (page === 'home') {
+    // Custom Navigate Function to handle history and state
+    const navigate = (newPage, newPostId = null) => {
+        let path = '/';
+        
+        if (newPage === 'home') {
+            path = '/';
             setHomeView('main');
+        } else if (newPage === 'blog-detail' && newPostId) {
+            path = `/blog/${newPostId}`;
+            setCurrentPostId(newPostId);
+        } else {
+            path = `/${newPage}`;
         }
-    }, [page]);
 
-    // Sync URL to state on back/forward
+        window.history.pushState({}, '', path);
+        setPage(newPage);
+        window.scrollTo(0, 0);
+    };
+
+    // Sync URL to state on back/forward buttons
     useEffect(() => {
         const handlePopState = () => {
-            setPage(getPageFromPath(window.location.pathname));
+            const path = window.location.pathname;
+            const newPage = getPageFromPath(path);
+            
+            if (newPage === 'blog-detail') {
+                const id = path.split('/')[2];
+                setCurrentPostId(id);
+            }
+            
+            setPage(newPage);
         };
 
         window.addEventListener('popstate', handlePopState);
         return () => {
             window.removeEventListener('popstate', handlePopState);
         };
-    }, []);
-
-
-    useEffect(() => {
-        setVisible(true);
     }, []);
 
     const renderPage = () => {
@@ -1238,9 +1284,17 @@ export default function App() {
                 return <TermsPage />;
             case 'admin':
                 return <AdminPage />;
+            case 'blog-detail':
+                return <BlogDetailPage id={currentPostId} navigate={navigate} />;
             case 'home':
             default:
-                return <HomePage setPage={setPage} view={homeView} setView={setHomeView} />;
+                return <HomePage 
+                    setPage={setPage} 
+                    view={homeView} 
+                    setView={setHomeView} 
+                    navigateToPost={(id) => navigate('blog-detail', id)}
+                    navigate={navigate}
+                />;
         }
     };
 
@@ -1268,15 +1322,14 @@ export default function App() {
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
             }}>
-                <Header setPage={setPage} setHomeView={setHomeView} />
+                <Header setPage={setPage} setHomeView={setHomeView} navigate={navigate} />
                 <div className="flex-grow">
                     {renderPage()}
                 </div>
-                <Footer setPage={setPage} />
+                <Footer setPage={setPage} navigate={navigate} />
                 <WhatsAppButton />
                 <TimedPopup page={page} />
             </div>
         </>
     );
 }
-
