@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import emailjs from 'https://esm.sh/@emailjs/browser@4';
-import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Brain, Target } from 'lucide-react';
+import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Edit, Brain, Target } from 'lucide-react';
 
 // --- IMPORTANT: CONFIGURATION ---
 const firebaseConfig = {
@@ -14,6 +14,8 @@ const firebaseConfig = {
   messagingSenderId: "1031021894893",
   appId: "1:1031021894893:web:0c92b0ce59cdd1906980e4"
 };
+
+// EmailJS Configuration
 const EMAILJS_SERVICE_ID = "service_iooou0l";
 const EMAILJS_TRIAL_TEMPLATE_ID = "template_vrkd0db";
 const EMAILJS_PUBLIC_KEY = "NWt6wW2tYX6CFDqYx";
@@ -22,10 +24,11 @@ const EMAILJS_SERVICE_ID_HIRING = "service_tjf2rtr"
 const EMAILJS_HIRING_TEMPLATE_ID = "template_solc2oq";
 const EMAILJS_PUBLIC_KEY_Hiring = "tKP4mOD4yD6bjcn1R";
 
+// Cloudinary Configuration
 const CLOUDINARY_CLOUD_NAME = "dknf3a0pt";
 const CLOUDINARY_UPLOAD_PRESET = "kjmp2cvx";
 
-
+// WhatsApp Configuration
 const WHATSAPP_PHONE_NUMBER = "17325682619";
 const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
 
@@ -328,16 +331,20 @@ const BlogDetailPage = ({ slug, navigate }) => {
                 return;
             }
             try {
-                // Since we changed from ID to slug/name, and we don't have a 'slug' field in the DB yet,
-                // we will fetch posts and match the studentName.
-                // In a production app with many posts, you should add a 'slug' field to the DB and use where('slug', '==', slug).
-                
                 const q = query(collection(db, "posts"));
                 const querySnapshot = await getDocs(q);
                 
                 const foundPost = querySnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .find(p => createSlug(p.studentName) === slug);
+                    .find(p => {
+                         // Reconstruct slug for comparison based on NEW format
+                         let pSlug = createSlug(p.studentName);
+                         if (p.month && p.year) {
+                             const prefix = "smart-kid-of-the-month-from-usa";
+                             pSlug = `${prefix}-${createSlug(p.month)}-${createSlug(p.year)}-${pSlug}`;
+                         }
+                         return pSlug === slug;
+                    });
 
                 if (foundPost) {
                     setPost(foundPost);
@@ -375,7 +382,7 @@ const BlogDetailPage = ({ slug, navigate }) => {
                     <div className="mt-12 flex flex-col md:flex-row items-start gap-8 bg-gray-800/80 p-6 rounded-lg border border-gray-700">
                         <img src={post.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post.studentName || 'Student'}`} className="w-full md:w-1/3 rounded-lg object-cover" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
                         <div className="w-full md:w-2/3">
-                            <h2 className="text-2xl font-bold text-white mb-4">1. {post.studentName || 'Anonymous Student'}</h2>
+                            <h2 className="text-2xl font-bold text-white mb-4">{post.studentName || 'Anonymous Student'}</h2>
                             <p className="text-gray-300 mb-6">{post.studentBio || 'No biography provided.'}</p>
                              <div className="mt-6">
                                 <h3 className="text-amber-400 font-semibold text-lg">Parent's Feedback:</h3>
@@ -405,7 +412,6 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
         return () => unsubscribe();
     }, []);
 
-    // NOTE: Instead of setting local 'detail' state, we navigate to the blog URL
     const handleViewDetail = (post) => {
         navigateToPost(post);
     };
@@ -416,7 +422,8 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                 <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
             </div>
             <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">{post?.title || 'Untitled Post'}</h3>
+                {/* Ensure title uses Smart Kid of the Month if it was autosaved or manual */}
+                <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">{post?.title || 'Smart Kid of the Month'}</h3>
                 <p className="mt-2 text-gray-400 text-sm flex-grow line-clamp-3">{post?.summary || 'No summary available.'}</p>
                 <span className="mt-4 text-amber-400 font-semibold inline-flex items-center">Read More <ArrowRight className="ml-2 h-4 w-4" /></span>
             </div>
@@ -428,7 +435,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
             <div className="py-20 md:py-32">
                  <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                     <div className="flex justify-between items-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">All "Star of the Month" Posts</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">All "Smart Kid of the Month" Posts</h2>
                         <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300">
                             <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
                         </button>
@@ -541,12 +548,13 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                 <TrialForm />
             </AnimatedSection>
 
-            {/* Stars of the Month Section */}
+            {/* Smart Kids of the Month Section (Previously Stars of the Month) */}
             <AnimatedSection>
                 <section id="blog" className="py-20">
                       <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
+                            {/* UPDATED HEADING */}
+                            <h2 className="text-3xl md:text-4xl font-bold text-white">Smart Kids of the Month</h2>
                             <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
                         </div>
 
@@ -554,7 +562,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                             <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
                                 {blogPosts.slice(0, 3).map((post, index) => (
                                     <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center">
-                                             <PostCard post={post} onCardClick={handleViewDetail}/>
+                                                 <PostCard post={post} onCardClick={handleViewDetail}/>
                                     </div>
                                 ))}
                             </div>
@@ -761,7 +769,7 @@ const HiringPage = () => {
                                  <div className="text-center mb-12">
                                      <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
                                      <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
-                                         Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
+                                          Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
                                      </p>
                                  </div>
                                  <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
@@ -798,7 +806,7 @@ const HiringPage = () => {
                                              </button>
                                          </div>
                                      </form>
-                                      {status.message && <div className={`mt-6 text-center text-sm ${statusColor}`}>{status.message}</div>}
+                                     {status.message && <div className={`mt-6 text-center text-sm ${statusColor}`}>{status.message}</div>}
                                  </div>
                             </div>
                 </div>
@@ -1024,6 +1032,9 @@ const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [posts, setPosts] = useState([]);
+    
+    // --- ADDED FOR EDITING ---
+    const [editingPost, setEditingPost] = useState(null); 
 
     const formRef = useRef();
     const [status, setStatus] = useState({ message: '', type: '' });
@@ -1042,6 +1053,10 @@ const AdminPage = () => {
         const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        }, (err) => {
+             if (err.code === 'permission-denied') {
+                 console.log("Permission denied for reading posts. User might not be an admin.");
+             }
         });
         return () => unsubscribe();
     }, [user]);
@@ -1061,64 +1076,102 @@ const AdminPage = () => {
     const handleLogout = async () => {
         await signOut(auth);
     };
+    
+    // --- EDITED FOR UPDATE LOGIC ---
+    const handleEditClick = (post) => {
+        setEditingPost(post);
+        // Scroll to top to see the form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-    const handleCreatePost = async (e) => {
+    const handleCancelEdit = () => {
+        setEditingPost(null);
+        // Optional: clear form manually or let key prop handle it
+    };
+
+    const handleSavePost = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setStatus({ message: '', type: '' });
 
         const formData = new FormData(e.target);
         const imageFile = formData.get('studentImageFile');
+        
+        let imageUrl = editingPost?.studentImageUrl;
 
-        if (!imageFile || imageFile.size === 0) {
-            setStatus({ message: 'Please select a student photo.', type: 'error' });
-            setIsSubmitting(false);
-            return;
+        // Image upload logic
+        if (imageFile && imageFile.size > 0) {
+             try {
+                const cloudinaryFormData = new FormData();
+                cloudinaryFormData.append('file', imageFile);
+                cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
+                    method: 'POST',
+                    body: cloudinaryFormData
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error.message || 'Cloudinary upload failed');
+                imageUrl = data.secure_url;
+            } catch (err) {
+                console.error(err);
+                setStatus({ message: 'Failed to upload image.', type: 'error' });
+                setIsSubmitting(false);
+                return;
+            }
+        } else if (!editingPost) {
+             // Create mode requires image if not present (in edit mode we keep old one)
+             setStatus({ message: 'Please select a student photo.', type: 'error' });
+             setIsSubmitting(false);
+             return;
         }
 
+        const postData = {
+            title: `Smart Kid of the Month - ${formData.get('month')} ${formData.get('year')}`,
+            summary: formData.get('summary'),
+            studentName: formData.get('studentName'),
+            studentImageUrl: imageUrl, // Uses new URL or old URL
+            studentBio: formData.get('studentBio'),
+            parentFeedback: formData.get('parentFeedback'),
+            coachFeedback: formData.get('coachFeedback'),
+            month: formData.get('month'),
+            year: formData.get('year'),
+        };
+
         try {
-            const cloudinaryFormData = new FormData();
-            cloudinaryFormData.append('file', imageFile);
-            cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-                method: 'POST',
-                body: cloudinaryFormData
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error.message || 'Cloudinary upload failed');
-
-            const newPost = {
-                title: `Star of the Month - ${formData.get('month')} ${formData.get('year')}`,
-                summary: formData.get('summary'),
-                studentName: formData.get('studentName'),
-                studentImageUrl: data.secure_url,
-                studentBio: formData.get('studentBio'),
-                parentFeedback: formData.get('parentFeedback'),
-                coachFeedback: formData.get('coachFeedback'),
-                createdAt: serverTimestamp(),
-            };
-
-            await addDoc(collection(db, "posts"), newPost);
-            setStatus({ message: 'Post published successfully!', type: 'success' });
+            if (editingPost) {
+                // UPDATE EXISTING
+                await updateDoc(doc(db, "posts", editingPost.id), {
+                    ...postData,
+                    updatedAt: serverTimestamp() // Track updates
+                });
+                setStatus({ message: 'Post updated successfully!', type: 'success' });
+                setEditingPost(null); // Exit edit mode
+            } else {
+                // CREATE NEW
+                await addDoc(collection(db, "posts"), {
+                    ...postData,
+                    createdAt: serverTimestamp()
+                });
+                setStatus({ message: 'Post published successfully!', type: 'success' });
+            }
             e.target.reset();
 
         } catch (err) {
             console.error(err);
-            setStatus({ message: 'Failed to publish post. Please try again.', type: 'error' });
+            setStatus({ message: 'Operation failed. Please try again.', type: 'error' });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleDeletePost = async (postId) => {
-        // Using console for confirmation as window.confirm is not allowed
-        console.log(`Attempting to delete post ${postId}. Confirm this action.`);
-        try {
-            await deleteDoc(doc(db, "posts", postId));
-        } catch (error) {
-            console.error("Error deleting post:", error);
-            console.error("Error: Could not delete the post.");
+        if(window.confirm("Are you sure you want to delete this post?")) {
+             try {
+                await deleteDoc(doc(db, "posts", postId));
+            } catch (error) {
+                console.error("Error deleting post:", error);
+            }
         }
     };
 
@@ -1158,36 +1211,57 @@ const AdminPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Create Post Form */}
+                    {/* Create/Edit Post Form */}
                     <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-8 border border-gray-700">
-                         <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Create "Star of the Month"</h2>
-                         <form ref={formRef} onSubmit={handleCreatePost}>
+                         <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                             <h2 className="text-2xl font-bold text-white">
+                                 {editingPost ? 'Edit "Smart Kid of the Month"' : 'Create "Smart Kid of the Month"'}
+                             </h2>
+                             {editingPost && (
+                                 <button onClick={handleCancelEdit} className="text-sm text-gray-400 hover:text-white underline">
+                                     Cancel Edit
+                                 </button>
+                             )}
+                         </div>
+                         
+                         {/* Form with KEY to reset on mode switch */}
+                         <form key={editingPost ? editingPost.id : 'create'} ref={formRef} onSubmit={handleSavePost}>
                              <div className="space-y-4">
                                  <div className="grid grid-cols-2 gap-4">
                                      <div>
                                          <label className="block text-sm font-medium text-gray-300 mb-2">Month</label>
-                                         <select name="month" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                         <select name="month" defaultValue={editingPost?.month || 'January'} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
                                              <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option>
                                              <option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
                                          </select>
                                      </div>
                                      <div>
                                          <label className="block text-sm font-medium text-gray-300 mb-2">Year</label>
-                                         <input name="year" type="number" defaultValue={new Date().getFullYear()} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                         <input name="year" type="number" defaultValue={editingPost?.year || new Date().getFullYear()} required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
                                      </div>
                                  </div>
-                                 <textarea name="summary" placeholder="Short Summary for the blog grid" required rows="3" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                 <input name="studentName" type="text" placeholder="Student's Name (e.g., Aarav S.)" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                 <textarea name="summary" defaultValue={editingPost?.summary} placeholder="Short Summary for the blog grid" required rows="3" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <input name="studentName" defaultValue={editingPost?.studentName} type="text" placeholder="Student's Name (e.g., Aarav S.)" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
                                  <div>
-                                      <label className="text-sm font-medium text-gray-300 mb-2 block">Student's Photo *</label>
-                                      <input name="studentImageFile" type="file" required accept="image/*" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
+                                      <label className="text-sm font-medium text-gray-300 mb-2 block">
+                                          {editingPost ? "Update Student's Photo (Optional)" : "Student's Photo *"}
+                                      </label>
+                                      {editingPost && <p className="text-xs text-gray-500 mb-2">Current image will be kept if you don't upload a new one.</p>}
+                                      <input name="studentImageFile" type="file" required={!editingPost} accept="image/*" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
                                  </div>
-                                 <textarea name="studentBio" placeholder="Student's Bio / Story" required rows="5" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                 <textarea name="parentFeedback" placeholder="Parent's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                 <textarea name="coachFeedback" placeholder="Coach's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                                 <button type="submit" disabled={isSubmitting} className="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg transition flex items-center justify-center">
-                                     {isSubmitting ? <Spinner color="text-gray-900"/> : 'Publish Post'}
-                                 </button>
+                                 <textarea name="studentBio" defaultValue={editingPost?.studentBio} placeholder="Student's Bio / Story" required rows="5" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <textarea name="parentFeedback" defaultValue={editingPost?.parentFeedback} placeholder="Parent's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <textarea name="coachFeedback" defaultValue={editingPost?.coachFeedback} placeholder="Coach's Feedback" required rows="4" className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                 <div className="flex gap-4">
+                                     <button type="submit" disabled={isSubmitting} className="flex-grow bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg transition flex items-center justify-center">
+                                         {isSubmitting ? <Spinner color="text-gray-900"/> : (editingPost ? 'Update Post' : 'Publish Post')}
+                                     </button>
+                                     {editingPost && (
+                                         <button type="button" onClick={handleCancelEdit} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition">
+                                             Cancel
+                                         </button>
+                                     )}
+                                 </div>
                                  {status.message && <p className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</p>}
                              </div>
                          </form>
@@ -1198,12 +1272,19 @@ const AdminPage = () => {
                         <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Manage Posts</h2>
                         <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                             {posts.length > 0 ? posts.map(post => (
-                                <div key={post.id} className="bg-gray-800/80 p-4 rounded-lg flex justify-between items-center">
+                                <div key={post.id} className={`bg-gray-800/80 p-4 rounded-lg flex justify-between items-center transition-colors ${editingPost?.id === post.id ? 'border border-amber-500' : ''}`}>
                                     <div>
                                         <p className="font-bold text-white">{post.title}</p>
                                         <p className="text-sm text-gray-400">{post.studentName}</p>
                                     </div>
-                                    <button onClick={() => handleDeletePost(post.id)} className="text-red-500 hover:text-red-400 p-2"><Trash2 size={20}/></button>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleEditClick(post)} className="text-blue-400 hover:text-blue-300 p-2" title="Edit Post">
+                                            <Edit size={20}/>
+                                        </button>
+                                        <button onClick={() => handleDeletePost(post.id)} className="text-red-500 hover:text-red-400 p-2" title="Delete Post">
+                                            <Trash2 size={20}/>
+                                        </button>
+                                    </div>
                                 </div>
                             )) : <p className="text-gray-400">No posts found.</p>}
                         </div>
@@ -1264,8 +1345,13 @@ export default function App() {
             path = '/';
             setHomeView('main');
         } else if (newPage === 'blog-detail' && data) {
-            // Generate URL friendly slug from student name
-            const slug = createSlug(data.studentName);
+            let slug = createSlug(data.studentName);
+            // Format: smart-kid-of-the-month-from-usa-{month}-{year}-{studentName}
+            // Logic updated to match requirement
+            if (data.month && data.year) {
+                const prefix = "smart-kid-of-the-month-from-usa";
+                slug = `${prefix}-${createSlug(data.month)}-${createSlug(data.year)}-${slug}`;
+            }
             path = `/blog/${slug}`;
             setCurrentPostSlug(slug);
         } else {
