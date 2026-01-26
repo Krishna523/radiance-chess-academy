@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import emailjs from 'https://esm.sh/@emailjs/browser@4';
 import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Brain, Target } from 'lucide-react';
@@ -33,6 +33,18 @@ const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// --- Utility Functions ---
+const createSlug = (text) => {
+    if (!text) return '';
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')        // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')    // Remove all non-word chars
+        .replace(/\-\-+/g, '-');     // Replace multiple - with single -
+};
 
 
 // --- Reusable Components ---
@@ -158,9 +170,9 @@ const Header = ({ setPage, setHomeView, navigate }) => {
             `}>
                 <div className="py-2">
                     {navLinks.map(link => (
-                          <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
-                              {link.name}
-                          </a>
+                        <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
+                            {link.name}
+                        </a>
                     ))}
                     <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer block py-3 px-6 text-amber-400 font-bold hover:bg-gray-700 transition">
                         Book FREE Trial
@@ -302,25 +314,33 @@ const ImageSlideshow = () => {
 
 // --- Page Components ---
 
-// --- NEW COMPONENT: Blog Detail Page (For separate URL) ---
-const BlogDetailPage = ({ id, navigate }) => {
+// --- MODIFIED COMPONENT: Blog Detail Page (Uses Slug) ---
+const BlogDetailPage = ({ slug, navigate }) => {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchPost = async () => {
-            if (!id) {
+            if (!slug) {
                 setError(true);
                 setLoading(false);
                 return;
             }
             try {
-                const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
+                // Since we changed from ID to slug/name, and we don't have a 'slug' field in the DB yet,
+                // we will fetch posts and match the studentName.
+                // In a production app with many posts, you should add a 'slug' field to the DB and use where('slug', '==', slug).
+                
+                const q = query(collection(db, "posts"));
+                const querySnapshot = await getDocs(q);
+                
+                const foundPost = querySnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .find(p => createSlug(p.studentName) === slug);
 
-                if (docSnap.exists()) {
-                    setPost({ id: docSnap.id, ...docSnap.data() });
+                if (foundPost) {
+                    setPost(foundPost);
                 } else {
                     setError(true);
                 }
@@ -333,7 +353,7 @@ const BlogDetailPage = ({ id, navigate }) => {
         };
 
         fetchPost();
-    }, [id]);
+    }, [slug]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center pt-20"><Spinner /></div>;
     if (error || !post) return (
@@ -387,7 +407,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
 
     // NOTE: Instead of setting local 'detail' state, we navigate to the blog URL
     const handleViewDetail = (post) => {
-        navigateToPost(post.id);
+        navigateToPost(post);
     };
 
     const PostCard = ({ post, onCardClick }) => (
@@ -445,7 +465,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
             {/* Why Choose Chess? Section */}
             <AnimatedSection>
                 <section className="py-20">
-                     <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                      <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="md:flex md:items-center md:gap-12">
                             <div className="md:w-1/2 mb-8 md:mb-0">
                                 <img
@@ -492,8 +512,8 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
             {/* Our Purpose Section */}
             <AnimatedSection>
                 <section className="py-20">
-                     <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                         <div className="md:flex md:items-center md:gap-12 flex-row-reverse"> {/* Reversed column order */}
+                      <div className="container mx-auto px-4 sm:px-6 max-w-6xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                          <div className="md:flex md:items-center md:gap-12 flex-row-reverse"> {/* Reversed column order */}
                             <div className="md:w-1/2 mb-8 md:mb-0">
                                 <img
                                     src="/our_purpose.png"
@@ -524,7 +544,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
             {/* Stars of the Month Section */}
             <AnimatedSection>
                 <section id="blog" className="py-20">
-                     <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                      <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Stars of the Month</h2>
                             <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
@@ -534,7 +554,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                             <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
                                 {blogPosts.slice(0, 3).map((post, index) => (
                                     <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center">
-                                         <PostCard post={post} onCardClick={handleViewDetail}/>
+                                             <PostCard post={post} onCardClick={handleViewDetail}/>
                                     </div>
                                 ))}
                             </div>
@@ -797,7 +817,7 @@ const ContactPage = () => (
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We are here to help you get started on your chess journey.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-               
+                
                         {/* US Office */}
                         <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
                             <img src="https://flagcdn.com/w160/us.png" alt="USA Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x85/1f2937/a855f7?text=US+Flag"; }}/>
@@ -1217,7 +1237,7 @@ export default function App() {
     };
 
     const [page, setPage] = useState('home');
-    const [currentPostId, setCurrentPostId] = useState(null);
+    const [currentPostSlug, setCurrentPostSlug] = useState(null);
     const [homeView, setHomeView] = useState('main');
     const [visible, setVisible] = useState(false);
 
@@ -1227,8 +1247,9 @@ export default function App() {
         const initialPage = getPageFromPath(path);
 
         if (initialPage === 'blog-detail') {
-            const id = path.split('/')[2];
-            setCurrentPostId(id);
+            // Extract everything after /blog/ as the slug
+            const slug = path.split('/blog/')[1];
+            setCurrentPostSlug(slug);
         }
         
         setPage(initialPage);
@@ -1236,15 +1257,17 @@ export default function App() {
     }, []);
 
     // Custom Navigate Function to handle history and state
-    const navigate = (newPage, newPostId = null) => {
+    const navigate = (newPage, data = null) => {
         let path = '/';
         
         if (newPage === 'home') {
             path = '/';
             setHomeView('main');
-        } else if (newPage === 'blog-detail' && newPostId) {
-            path = `/blog/${newPostId}`;
-            setCurrentPostId(newPostId);
+        } else if (newPage === 'blog-detail' && data) {
+            // Generate URL friendly slug from student name
+            const slug = createSlug(data.studentName);
+            path = `/blog/${slug}`;
+            setCurrentPostSlug(slug);
         } else {
             path = `/${newPage}`;
         }
@@ -1261,8 +1284,8 @@ export default function App() {
             const newPage = getPageFromPath(path);
             
             if (newPage === 'blog-detail') {
-                const id = path.split('/')[2];
-                setCurrentPostId(id);
+                const slug = path.split('/blog/')[1];
+                setCurrentPostSlug(slug);
             }
             
             setPage(newPage);
@@ -1285,14 +1308,14 @@ export default function App() {
             case 'admin':
                 return <AdminPage />;
             case 'blog-detail':
-                return <BlogDetailPage id={currentPostId} navigate={navigate} />;
+                return <BlogDetailPage slug={currentPostSlug} navigate={navigate} />;
             case 'home':
             default:
                 return <HomePage 
                     setPage={setPage} 
                     view={homeView} 
                     setView={setHomeView} 
-                    navigateToPost={(id) => navigate('blog-detail', id)}
+                    navigateToPost={(post) => navigate('blog-detail', post)}
                     navigate={navigate}
                 />;
         }
