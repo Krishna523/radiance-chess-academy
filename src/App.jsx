@@ -144,22 +144,22 @@ const Header = ({ setPage, setHomeView, navigate }) => {
     return (
         <header className={`sticky top-0 z-40 border-b border-gray-700 transition-all duration-300 ${scrolled ? 'bg-gray-900/95 backdrop-blur-xl shadow-lg' : 'bg-gray-900/70 backdrop-blur-lg'}`}>
             <div className={`container mx-auto px-4 sm:px-6 flex justify-between items-center transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
-                <a onClick={() => handleNavClick('home')} className="cursor-pointer text-lg sm:text-2xl font-bold text-amber-400 flex items-center">
+                <a onClick={() => handleNavClick('home')} className="cursor-pointer text-lg sm:text-2xl font-bold text-amber-400 flex items-center hover:text-amber-300 transition-colors duration-200">
                     <img src="/icon.png" alt="Radiance Chess Academy Logo" className={`mr-3 rounded-full object-cover transition-all duration-300 ${scrolled ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-10 w-10 sm:h-12 sm:w-12'}`} />
                     Radiance Chess Academy
                 </a>
                 <nav className="hidden md:flex items-center space-x-6">
                     {navLinks.map(link => (
-                        <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer text-base font-medium text-gray-300 hover:text-amber-400 transition">
+                        <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer text-base font-medium text-gray-300 hover:text-amber-400 transition-all duration-200 hover:underline underline-offset-4">
                             {link.name}
                         </a>
                     ))}
                 </nav>
                 <div className="flex items-center">
-                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base">
+                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
                         Book FREE Trial
                     </a>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white relative h-6 w-6">
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white relative h-6 w-6 transition-colors">
                          <Menu className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 rotate-90' : 'opacity-100 rotate-0'}`} />
                          <X className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-90'}`} />
                     </button>
@@ -201,21 +201,21 @@ const Footer = ({ setPage, navigate }) => {
             <div className="container mx-auto px-6 py-8">
                 <div className="md:flex md:justify-between items-center text-center md:text-left">
                     <div className="mb-4 md:mb-0">
-                        <a onClick={() => handleNavClick('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start">
+                        <a onClick={() => handleNavClick('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start hover:text-amber-300 transition-colors duration-200">
                             <img src="/icon.png" alt="Radiance Chess Academy Logo" className="mr-3 h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover" />
                             Radiance Chess Academy
                         </a>
                         <p className="text-gray-400 mt-2">Nurturing the next generation of chess champions.</p>
                     </div>
                     <div className="flex justify-center space-x-6 mt-4 md:mt-0">
-                        <a href="https://www.facebook.com/share/1BYErEka53/" className="text-gray-400 hover:text-white"><Facebook /></a>
-                        <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" className="text-gray-400 hover:text-white"><Instagram /></a>
+                        <a href="https://www.facebook.com/share/1BYErEka53/" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Facebook /></a>
+                        <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Instagram /></a>
                     </div>
                 </div>
                  <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm flex flex-col sm:flex-row justify-center items-center gap-x-4 gap-y-2">
                     <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
                     <span className="hidden sm:inline">|</span>
-                    <a onClick={() => handleNavClick('terms')} className="cursor-pointer hover:text-white transition">Terms & Policies</a>
+                    <a onClick={() => handleNavClick('terms')} className="cursor-pointer hover:text-amber-400 transition-colors duration-200">Terms & Policies</a>
                 </div>
             </div>
         </footer>
@@ -280,13 +280,19 @@ const ImageSlideshow = () => {
             filter: `blur(${offset === 0 ? 0 : '4px'}) brightness(${offset === 0 ? 1 : 0.5})`,
             zIndex: totalSlides - Math.abs(offset),
             opacity: isVisible ? 1 : 0,
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         };
     };
 
     return (
-        <div className="h-[300px] sm:h-[500px] w-full relative flex items-center justify-center overflow-hidden">
-            <div className="relative w-full h-full sm:h-3/4">
+        <div className="h-[300px] sm:h-[500px] w-full relative flex items-center justify-center overflow-hidden rounded-2xl">
+            {/* Blurred Background */}
+            <div className="absolute inset-0 rounded-2xl" style={{backgroundImage: `url(${slides[currentIndex].url})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(12px)', transition: 'filter 0.6s ease-in-out'}}></div>
+            
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+
+            <div className="relative w-full h-full sm:h-3/4 z-10">
                 {slides.map((slide, index) => (
                     <div
                         key={index}
@@ -302,13 +308,13 @@ const ImageSlideshow = () => {
                     </div>
                 ))}
             </div>
-            <div className="absolute bottom-4 sm:bottom-16 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full z-20 text-sm sm:text-base">
+            <div className="absolute bottom-4 sm:bottom-16 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full z-20 text-sm sm:text-base font-medium transition-all duration-300">
                 {slides[currentIndex].caption}
             </div>
-            <button onClick={prevSlide} className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-5 text-2xl rounded-full p-2 bg-black/30 hover:bg-black/50 text-white cursor-pointer z-30 transition">
+            <button onClick={prevSlide} className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-5 text-2xl rounded-full p-2 bg-black/40 hover:bg-black/70 text-white cursor-pointer z-30 transition-all duration-300 hover:scale-110">
                 <ChevronLeft size={30} />
             </button>
-            <button onClick={nextSlide} className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-5 text-2xl rounded-full p-2 bg-black/30 hover:bg-black/50 text-white cursor-pointer z-30 transition">
+            <button onClick={nextSlide} className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-5 text-2xl rounded-full p-2 bg-black/40 hover:bg-black/70 text-white cursor-pointer z-30 transition-all duration-300 hover:scale-110">
                 <ChevronRight size={30} />
             </button>
         </div>
@@ -373,7 +379,7 @@ const BlogDetailPage = ({ slug, navigate }) => {
     return (
         <main className="py-20 md:py-32">
             <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
-                <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8">
+                <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8 transition-colors duration-200 hover:-translate-x-1 transform">
                     <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
                 </button>
                 <div className="prose prose-invert prose-lg max-w-none">
@@ -386,11 +392,11 @@ const BlogDetailPage = ({ slug, navigate }) => {
                             <p className="text-gray-300 mb-6">{post.studentBio || 'No biography provided.'}</p>
                              <div className="mt-6">
                                 <h3 className="text-amber-400 font-semibold text-lg">Parent's Feedback:</h3>
-                                <p className="italic text-gray-400">"{post.parentFeedback || 'No feedback provided.'}"</p>
+                                <p className="italic text-gray-200">"{post.parentFeedback || 'No feedback provided.'}"</p>
                             </div>
                             <div className="mt-6">
                                 <h3 className="text-amber-400 font-semibold text-lg">Coach feedback on {post.studentName || 'the student'}:</h3>
-                                <p className="italic text-gray-400">"{post.coachFeedback || 'No feedback provided.'}"</p>
+                                <p className="italic text-gray-200">"{post.coachFeedback || 'No feedback provided.'}"</p>
                             </div>
                         </div>
                     </div>
@@ -417,15 +423,16 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
     };
 
     const PostCard = ({ post, onCardClick }) => (
-        <div onClick={() => onCardClick(post)} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 flex flex-col group cursor-pointer shadow-sm hover:shadow-lg transition-shadow h-full'>
-            <div className="overflow-hidden">
-                <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
+        <div onClick={() => onCardClick(post)} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 hover:border-amber-500 flex flex-col group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 h-full transform hover:-translate-y-1'>
+            <div className="overflow-hidden flex items-center justify-center h-48 relative bg-gray-700" style={{backgroundImage: `url(${post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+                <div className="absolute inset-0" style={{backgroundImage: `url(${post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(8px)', zIndex: 0}}></div>
+                <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 relative z-10" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
             </div>
             <div className="p-6 flex flex-col flex-grow">
                 {/* Ensure title uses Smart Kid of the Month if it was autosaved or manual */}
-                <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">{post?.title || 'Smart Kid of the Month'}</h3>
+                <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors duration-300">{post?.title || 'Smart Kid of the Month'}</h3>
                 <p className="mt-2 text-gray-400 text-sm flex-grow line-clamp-3">{post?.summary || 'No summary available.'}</p>
-                <span className="mt-4 text-amber-400 font-semibold inline-flex items-center">Read More <ArrowRight className="ml-2 h-4 w-4" /></span>
+                <span className="mt-4 text-amber-400 font-semibold inline-flex items-center group-hover:text-amber-300 transition-colors duration-300">Read More <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" /></span>
             </div>
         </div>
     );
@@ -436,7 +443,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                  <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                     <div className="flex justify-between items-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">All "Smart Kid of the Month" Posts</h2>
-                        <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300">
+                        <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 hover:-translate-x-1 transform">
                             <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
                         </button>
                     </div>
@@ -456,13 +463,13 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
             <section className="py-20 md:py-32">
                  <div className="container mx-auto px-4 sm:px-6 text-center bg-gray-900/50 backdrop-blur-sm rounded-2xl py-16 sm:py-24 border border-gray-700 opacity-0 animate-fade-in-down">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight">
-                        Unlock Your Child's <span className="text-amber-400">Genius</span> with Chess
+                        Unlock Your Child's <span className="text-amber-400 hover:text-amber-300 transition-colors duration-300">Genius</span> with Chess
                     </h1>
-                    <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                    <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                         Join our fun & interactive online classes for kids aged 5-16. Our FIDE-rated coaches are here to guide your child from their first move to checkmate.
                     </p>
                     <div className="mt-10">
-                        <a href="#enroll" className="nav-link cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-10 rounded-lg text-lg">
+                        <a href="#enroll" className="nav-link cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-10 rounded-lg text-lg transition-all duration-200 inline-block hover:shadow-lg hover:shadow-amber-500/50 hover:-translate-y-1">
                             Enroll for a FREE Trial Class
                         </a>
                     </div>
@@ -502,15 +509,15 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                     <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Radiance Chess Academy?</h2>
-                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We provide a world-class learning environment to nurture the champion in your child.</p>
+                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">We provide a world-class learning environment to nurture the champion in your child.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
-                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BookOpenCheck className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Structured Curriculum</h3><p className="text-gray-400">A comprehensive syllabus designed by experts for all levels, from beginner to advanced.</p></div>
-                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Users className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Small Group Classes</h3><p className="text-gray-400">Personalized attention guaranteed with a maximum of 5 students per batch.</p></div>
-                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
-                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
-                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-2"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6"><BarChart3 className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Performance Tracking</h3><p className="text-gray-400">Regular progress reports and feedback sessions to monitor your child's growth.</p></div>
+                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><Award className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">FIDE Rated Coaches</h3><p className="text-gray-400">Learn from experienced and certified international chess masters and trainers.</p></div>
+                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><BookOpenCheck className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Structured Curriculum</h3><p className="text-gray-400">A comprehensive syllabus designed by experts for all levels, from beginner to advanced.</p></div>
+                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><Users className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Small Group Classes</h3><p className="text-gray-400">Personalized attention guaranteed with a maximum of 5 students per batch.</p></div>
+                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><Trophy className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Regular Tournaments</h3><p className="text-gray-400">Opportunities to compete in weekly internal and major external chess tournaments.</p></div>
+                             <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><Globe className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Global Community</h3><p className="text-gray-400">Join a vibrant community of chess lovers from over 30 countries worldwide.</p></div>
+                            <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/20"><div className="flex items-center justify-center bg-amber-500/10 h-16 w-16 rounded-full mb-6 group-hover:bg-amber-500/20 transition-all duration-300"><BarChart3 className="text-amber-400 h-8 w-8"/></div><h3 className="text-xl font-bold text-white mb-3">Performance Tracking</h3><p className="text-gray-400">Regular progress reports and feedback sessions to monitor your child's growth.</p></div>
                         </div>
                     </div>
                 </section>
@@ -555,14 +562,14 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                         <div className="text-center mb-16">
                             {/* UPDATED HEADING */}
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Smart Kids of the Month</h2>
-                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the hard work and success of our talented students.</p>
+                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">Celebrating the hard work and success of our talented students.</p>
                         </div>
 
                         {blogPosts.length > 0 ? (
-                            <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                                 {blogPosts.slice(0, 3).map((post, index) => (
-                                    <div key={post.id} className="flex-shrink-0 w-5/6 sm:w-3/4 md:w-auto snap-center">
-                                                 <PostCard post={post} onCardClick={handleViewDetail}/>
+                                    <div key={post.id}>
+                                        <PostCard post={post} onCardClick={handleViewDetail}/>
                                     </div>
                                 ))}
                             </div>
@@ -572,7 +579,9 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
 
                         {blogPosts.length > 3 && (
                             <div className="text-center mt-12">
-                                <button onClick={() => setView('allPosts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg">View All Posts</button>
+                                <button onClick={() => setView('allPosts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:text-amber-300 inline-flex items-center">
+                                    View All Posts <ArrowRight className="ml-2 h-4 w-4" />
+                                </button>
                             </div>
                         )}
                     </div>
@@ -585,9 +594,69 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                     <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Our Achievers</h2>
-                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">Celebrating the victories and milestones of our students.</p>
+                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">Celebrating the victories and milestones of our students.</p>
                         </div>
                         <ImageSlideshow />
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Parent Testimonials Section */}
+            <AnimatedSection>
+                <section className="py-20">
+                    <div className="container mx-auto px-4 sm:px-6 bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-white">What Parents Are Saying</h2>
+                            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">Hear from the parents of our Smart Kids of the Month</p>
+                        </div>
+
+                        {blogPosts.length > 3 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {blogPosts.slice(3, 6).map((post, index) => {
+                                    // Summarize feedback - take first 120 characters or first sentence
+                                    const summarizeFeedback = (feedback) => {
+                                        if (!feedback) return 'No feedback provided.';
+                                        const sentences = feedback.split('.');
+                                        const summary = sentences[0] + '.';
+                                        return summary.length > 150 ? summary.substring(0, 150) + '...' : summary;
+                                    };
+
+                                    return (
+                                        <div key={post.id} className="bg-gray-800/80 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 hover:-translate-y-1">
+                                            {/* Student Image */}
+                                            <div className="relative h-64 overflow-hidden bg-gray-700">
+                                                <div className="absolute inset-0" style={{backgroundImage: `url(${post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(4px)'}}></div>
+                                                <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full h-full object-contain relative z-10" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
+                                            </div>
+
+                                            {/* Student Name */}
+                                            <div className="p-6">
+                                                <h3 className="text-xl font-bold text-amber-400 mb-2">{post?.studentName || 'Anonymous Student'}</h3>
+                                                
+                                                {/* 5-Star Rating */}
+                                                <div className="flex items-center mb-4">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <svg key={i} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20">
+                                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                                        </svg>
+                                                    ))}
+                                                </div>
+
+                                                {/* Summarized Parent Feedback */}
+                                                <p className="text-gray-200 italic leading-relaxed text-sm">"{summarizeFeedback(post?.parentFeedback)}"</p>
+                                                
+                                                {/* Learn More Button */}
+                                                <button onClick={() => navigateToPost(post)} className="mt-4 inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 font-semibold text-sm">
+                                                    View Full Story <ArrowRight className="ml-2 h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <p className="text-center text-gray-400">No testimonials yet.</p>
+                        )}
                     </div>
                 </section>
             </AnimatedSection>
@@ -601,10 +670,10 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                     <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                              <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
                              <div className="space-y-4">
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
+                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
 
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
+                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
+                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
                             </div>
                     </div>
                 </section>
@@ -669,11 +738,11 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
                  <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
                     <div className="lg:w-1/2 text-center lg:text-left">
                          <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
-                         <p className="mt-4 text-gray-300 text-lg">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
+                         <p className="mt-4 text-gray-300 text-lg leading-relaxed">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
                          <div className="mt-8 space-y-4 text-gray-300">
-                             <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>1-on-1 interaction with a senior coach</span></div>
-                             <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Experience our unique teaching method</span></div>
-                             <div className="flex items-center justify-center lg:justify-start"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3"/><span>Understand your child's strengths & weaknesses</span></div>
+                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>1-on-1 interaction with a senior coach</span></div>
+                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>Experience our unique teaching method</span></div>
+                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>Understand your child's strengths & weaknesses</span></div>
                         </div>
                     </div>
                     <div className="lg:w-1/2 mt-10 lg:mt-0">
@@ -681,18 +750,18 @@ const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
                             <h3 className="text-2xl font-bold text-center text-white mb-6">Fill in The Details to Enroll</h3>
                             <form ref={formRef} onSubmit={handleSubmit}>
                                 <div className="space-y-5">
-                                    <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                                    <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
+                                    <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
+                                    <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
+                                    <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
+                                    <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
+                                    <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200">
                                         <option value="" disabled>Chess Experience Level</option>
                                         <option value="Beginner">Beginner (New to chess)</option>
                                         <option value="Intermediate">Intermediate (Knows the rules)</option>
                                         <option value="Advanced">Advanced (Plays tournaments)</option>
                                     </select>
-                                    <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-6 rounded-lg text-lg flex items-center justify-center">
+                                    <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-6 rounded-lg text-lg flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed">
                                         {isLoading ? <Spinner color="text-gray-900" /> : 'Submit & Book My FREE Class'}
                                     </button>
                                 </div>
@@ -801,7 +870,7 @@ const HiringPage = () => {
                                              </div>
                                          </div>
                                          <div className="mt-8">
-                                             <button type="submit" disabled={isLoading} className="w-full md:w-auto cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center">
+                                             <button type="submit" disabled={isLoading} className="w-full md:w-auto cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed">
                                                  {isLoading ? <Spinner color="text-gray-900" /> : 'Submit Application'}
                                              </button>
                                          </div>
@@ -827,7 +896,7 @@ const ContactPage = () => (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 
                         {/* US Office */}
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 text-center transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-1">
                             <img src="https://flagcdn.com/w160/us.png" alt="USA Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x85/1f2937/a855f7?text=US+Flag"; }}/>
                             <h3 className="text-xl font-bold text-white mb-2">UNITED STATES</h3>
                             <p className="text-gray-400">
@@ -835,14 +904,14 @@ const ContactPage = () => (
 500 w Madison Street, Chicago, IL 60661, <br/>United States.
                             </p>
                             <p className="text-gray-300 mt-4">
-                                Contact us: <a href="tel:+17325682619" className="text-amber-400 hover:underline">+1 (732) 568-2619</a>
+                                Contact us: <a href="tel:+17325682619" className="text-amber-400 hover:text-amber-300 transition-colors duration-200">+1 (732) 568-2619</a>
                             </p>
                             <p className="text-gray-300 mt-2">
-                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:underline break-all">radiancechessacademy.online@gmail.com</a>
+                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:text-amber-300 transition-colors duration-200 break-all">radiancechessacademy.online@gmail.com</a>
                             </p>
                         </div>
                                  {/* India Office */}
-                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 text-center">
+                        <div className="bg-gray-800/80 p-8 rounded-lg border border-gray-700 hover:border-amber-500 hover:bg-gray-800 text-center transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-1">
                             <img src="https://flagcdn.com/w160/in.png" alt="Indian Flag" className="w-20 h-auto mx-auto mb-6 rounded-md" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/160x107/1f2937/a855f7?text=IN+Flag"; }}/>
                             <h3 className="text-xl font-bold text-white mb-2">INDIA - HEADQUARTERS</h3>
                             <p className="text-gray-400">
@@ -850,10 +919,10 @@ const ContactPage = () => (
                                 Near Tidel Park, Tharamani,<br/> Chennai – 600113, Tamil Nadu, India.
                             </p>
                             <p className="text-gray-300 mt-4">
-                                Contact us: <a href="tel:+919342678754" className="text-amber-400 hover:underline">+91-93426 78754</a>
+                                Contact us: <a href="tel:+919342678754" className="text-amber-400 hover:text-amber-300 transition-colors duration-200">+91-93426 78754</a>
                             </p>
                             <p className="text-gray-300 mt-2">
-                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:underline break-all">radiancechessacademy.online@gmail.com</a>
+                                Email: <a href="mailto:radiancechessacademy.online@gmail.com" className="text-amber-400 hover:text-amber-300 transition-colors duration-200 break-all">radiancechessacademy.online@gmail.com</a>
                             </p>
                         </div>
                     </div>
@@ -1206,7 +1275,7 @@ const AdminPage = () => {
             <div className="container mx-auto px-4 sm:px-6">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-                    <button onClick={handleLogout} className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg">Logout</button>
+                    <button onClick={handleLogout} className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50">Logout</button>
 
                 </div>
 
@@ -1410,6 +1479,10 @@ export default function App() {
     return (
         <>
             <style>{`
+                html {
+                    scroll-behavior: smooth;
+                    scroll-padding-top: 80px;
+                }
                 @keyframes fadeInDown {
                     from {
                         opacity: 0;
@@ -1420,9 +1493,40 @@ export default function App() {
                         transform: translateY(0);
                     }
                 }
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(1rem);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                @keyframes scaleIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.95);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
                 .animate-fade-in-down {
-                    /* Apply animation with a delay to start after the main page fade-in */
                     animation: fadeInDown 1s ease-out 0.5s forwards;
+                }
+                .animate-slide-up {
+                    animation: slideUp 0.8s ease-out;
+                }
+                .animate-scale-in {
+                    animation: scaleIn 0.5s ease-out;
+                }
+                input:focus, select:focus, textarea:focus {
+                    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+                }
+                ::placeholder {
+                    opacity: 0.7;
                 }
             `}</style>
             <div className={`bg-gray-900 text-white min-h-screen flex flex-col transition-opacity duration-700 ease-in ${visible ? 'opacity-100' : 'opacity-0'}`} style={{
