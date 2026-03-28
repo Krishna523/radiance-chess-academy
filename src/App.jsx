@@ -443,7 +443,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                  <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
                     <div className="flex justify-between items-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">All "Smart Kid of the Month" Posts</h2>
-                        <button onClick={() => setView('main')} className="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 hover:-translate-x-1 transform">
+                        <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 hover:-translate-x-1 transform">
                             <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
                         </button>
                     </div>
@@ -579,7 +579,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
 
                         {blogPosts.length > 3 && (
                             <div className="text-center mt-12">
-                                <button onClick={() => setView('allPosts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:text-amber-300 inline-flex items-center">
+                                <button onClick={() => navigate('all-posts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:text-amber-300 inline-flex items-center">
                                     View All Posts <ArrowRight className="ml-2 h-4 w-4" />
                                 </button>
                             </div>
@@ -1368,7 +1368,11 @@ const AdminPage = () => {
 // --- Main App Component ---
 export default function App() {
     const getPageFromPath = (path) => {
-        // Handle blog detail path first
+        // Handle /blog/all-posts first
+        if (path === '/blog/all-posts') {
+            return 'all-posts';
+        }
+        // Handle blog detail path
         if (path.startsWith('/blog/')) {
             return 'blog-detail';
         }
@@ -1400,6 +1404,8 @@ export default function App() {
             // Extract everything after /blog/ as the slug
             const slug = path.split('/blog/')[1];
             setCurrentPostSlug(slug);
+        } else if (initialPage === 'all-posts') {
+            setHomeView('allPosts');
         }
         
         setPage(initialPage);
@@ -1413,6 +1419,10 @@ export default function App() {
         if (newPage === 'home') {
             path = '/';
             setHomeView('main');
+        } else if (newPage === 'all-posts') {
+            path = '/blog/all-posts';
+            setHomeView('allPosts');
+            setPage('home');
         } else if (newPage === 'blog-detail' && data) {
             let slug = createSlug(data.studentName);
             // Format: smart-kid-of-the-month-from-usa-{month}-{year}-{studentName}
@@ -1441,9 +1451,12 @@ export default function App() {
             if (newPage === 'blog-detail') {
                 const slug = path.split('/blog/')[1];
                 setCurrentPostSlug(slug);
+            } else if (newPage === 'all-posts') {
+                setHomeView('allPosts');
+                setPage('home');
+            } else {
+                setPage(newPage);
             }
-            
-            setPage(newPage);
         };
 
         window.addEventListener('popstate', handlePopState);
