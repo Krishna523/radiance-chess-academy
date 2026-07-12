@@ -785,43 +785,27 @@ const HiringPage = () => {
         setIsLoading(true);
         setStatus({ message: '', type: '' });
 
-        const resumeFile = formRef.current.resumeFile.files[0];
-        if (!resumeFile) {
-            setStatus({ message: 'Please select a resume file.', type: 'error' });
-            setIsLoading(false);
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', resumeFile);
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        // Add this line to fix the upload issue for non-image files
-        formData.append('resource_type', 'auto');
-
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error.message || 'Cloudinary upload failed');
-
             const templateParams = {
-                firstName: formRef.current.firstName.value,
-                lastName: formRef.current.lastName.value,
-                phone: formRef.current.phone.value,
-                email: formRef.current.email.value,
-                fideProfile: formRef.current.fideProfile.value,
-                resumeUrl: data.secure_url
+                firstName: formRef.current.firstName.value.trim(),
+                lastName: formRef.current.lastName.value.trim(),
+                phone: formRef.current.phone.value.trim(),
+                email: formRef.current.email.value.trim(),
+                fideProfile: formRef.current.fideProfile.value.trim() || 'Not provided',
+                address: formRef.current.address.value.trim(),
+                city: formRef.current.city.value.trim(),
+                state: formRef.current.state.value.trim(),
+                country: formRef.current.country.value.trim(),
+                coachProfile: formRef.current.coachProfile.value.trim()
             };
 
-            await emailjs.send(EMAILJS_SERVICE_ID_HIRING,EMAILJS_HIRING_TEMPLATE_ID, templateParams,EMAILJS_PUBLIC_KEY_Hiring );
+            await emailjs.send(EMAILJS_SERVICE_ID_HIRING, EMAILJS_HIRING_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY_Hiring);
 
             setStatus({ message: 'Thank you! Your application has been sent.', type: 'success' });
             formRef.current.reset();
 
         } catch (error) {
-            console.error("Detailed Error:", error);
+            console.error('Detailed Error:', error);
             setStatus({ message: `Oops! Something went wrong. Error: ${error.message || 'Unknown Error'}.`, type: 'error' });
         } finally {
             setIsLoading(false);
@@ -865,8 +849,24 @@ const HiringPage = () => {
                                                  <input type="url" name="fideProfile" id="fideProfile" placeholder="e.g. https://ratings.fide.com/profile/..." className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
                                              </div>
                                              <div className="md:col-span-2">
-                                                 <label htmlFor="resumeFile" className="block text-sm font-medium text-gray-300 mb-2">Resume / CV *</label>
-                                                 <input type="file" name="resumeFile" id="resumeFile" required accept=".pdf,.doc,.docx,.txt" className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-300 hover:file:bg-amber-500/20 cursor-pointer"/>
+                                                 <label htmlFor="address" className="block text-sm font-medium text-gray-300 mb-2">Address *</label>
+                                                 <input type="text" name="address" id="address" placeholder="Street address" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                             </div>
+                                             <div>
+                                                 <label htmlFor="city" className="block text-sm font-medium text-gray-300 mb-2">City *</label>
+                                                 <input type="text" name="city" id="city" placeholder="City" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                             </div>
+                                             <div>
+                                                 <label htmlFor="state" className="block text-sm font-medium text-gray-300 mb-2">State *</label>
+                                                 <input type="text" name="state" id="state" placeholder="State" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                             </div>
+                                             <div className="md:col-span-2">
+                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-300 mb-2">Country *</label>
+                                                 <input type="text" name="country" id="country" placeholder="Country" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"/>
+                                             </div>
+                                             <div className="md:col-span-2">
+                                                 <label htmlFor="coachProfile" className="block text-sm font-medium text-gray-300 mb-2">Coach Profile *</label>
+                                                 <textarea name="coachProfile" id="coachProfile" rows="5" required placeholder="Tell us about your coaching background, achievements, and teaching approach." className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                                              </div>
                                          </div>
                                          <div className="mt-8">
