@@ -43,7 +43,8 @@ export default async function handler(req, res) {
         ZEPTOMAIL_FROM_EMAIL,
         ZEPTOMAIL_FROM_NAME,
         HIRING_NOTIFY_EMAIL,
-        HIRING_NOTIFY_NAME
+        HIRING_NOTIFY_NAME,
+        ZEPTOMAIL_AUTOREPLY_TEMPLATE_KEY
     } = process.env;
 
     if (!ZEPTOMAIL_URL || !ZEPTOMAIL_TOKEN || !ZEPTOMAIL_TEMPLATE_KEY || !ZEPTOMAIL_FROM_EMAIL || !HIRING_NOTIFY_EMAIL) {
@@ -65,6 +66,34 @@ export default async function handler(req, res) {
                     email_address: {
                         address: HIRING_NOTIFY_EMAIL,
                         name: HIRING_NOTIFY_NAME || 'Radiance Admin'
+                    }
+                }
+            ],
+            merge_info: {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                phone: phone.trim(),
+                email: email.trim(),
+                fideProfile: (fideProfile && fideProfile.trim()) || 'Not provided',
+                address: address.trim(),
+                city: city.trim(),
+                state: state.trim(),
+                country: country.trim(),
+                coachProfile: coachProfile.trim()
+            }
+        });
+
+        await client.sendMailWithTemplate({
+            template_key: ZEPTOMAIL_AUTOREPLY_TEMPLATE_KEY,
+            from: {
+                address: ZEPTOMAIL_FROM_EMAIL,
+                name: ZEPTOMAIL_FROM_NAME || 'Radiance Chess Academy'
+            },
+            to: [
+                {
+                    email_address: {
+                        address: email.trim(),
+                        name: `${firstName.trim()} ${lastName.trim()}`
                     }
                 }
             ],
