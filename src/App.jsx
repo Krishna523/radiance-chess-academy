@@ -5,6 +5,8 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 import emailjs from 'https://esm.sh/@emailjs/browser@4';
 import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Edit, Brain, Target } from 'lucide-react';
 
+
+
 // --- IMPORTANT: CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyCENrpQULXNNnSlrQqQZLpeebLmiodmoUQ",
@@ -19,10 +21,6 @@ const firebaseConfig = {
 const EMAILJS_SERVICE_ID = "service_iooou0l";
 const EMAILJS_TRIAL_TEMPLATE_ID = "template_vrkd0db";
 const EMAILJS_PUBLIC_KEY = "NWt6wW2tYX6CFDqYx";
-
-const EMAILJS_SERVICE_ID_HIRING = "service_tjf2rtr"
-const EMAILJS_HIRING_TEMPLATE_ID = "template_solc2oq";
-const EMAILJS_PUBLIC_KEY_Hiring = "tKP4mOD4yD6bjcn1R";
 
 // Cloudinary Configuration
 const CLOUDINARY_CLOUD_NAME = "dknf3a0pt";
@@ -786,7 +784,7 @@ const HiringPage = () => {
         setStatus({ message: '', type: '' });
 
         try {
-            const templateParams = {
+            const applicationData = {
                 firstName: formRef.current.firstName.value.trim(),
                 lastName: formRef.current.lastName.value.trim(),
                 phone: formRef.current.phone.value.trim(),
@@ -799,7 +797,21 @@ const HiringPage = () => {
                 coachProfile: formRef.current.coachProfile.value.trim()
             };
 
-            await emailjs.send(EMAILJS_SERVICE_ID_HIRING, EMAILJS_HIRING_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY_Hiring);
+            // Sent to our own /api route (Vercel serverless function), which holds the
+            // Zoho ZeptoMail secret token and does the actual send. Never call ZeptoMail
+            // directly from the browser -- that would expose the secret token to anyone
+            // viewing the page source.
+            const response = await fetch('/api/hiring-application', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(applicationData)
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(result.error || `Request failed with status ${response.status}`);
+            }
 
             setStatus({ message: 'Thank you! Your application has been sent.', type: 'success' });
             formRef.current.reset();
