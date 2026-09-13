@@ -797,6 +797,29 @@ const HiringPage = () => {
                 coachProfile: formRef.current.coachProfile.value.trim()
             };
 
+            const resumeFile = formRef.current.resume.files[0];
+            if (!resumeFile) {
+                throw new Error('Please select a resume.');
+            }
+            if (resumeFile.size > 10 * 1024 * 1024) {
+                throw new Error('Resume must be 10 MB or smaller.');
+            }
+
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', resumeFile);
+            cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+                method: 'POST',
+                body: cloudinaryFormData
+            });
+            const uploadResult = await uploadResponse.json();
+            if (!uploadResponse.ok) {
+                throw new Error(uploadResult.error?.message || 'Resume upload failed.');
+            }
+            applicationData.resumeUrl = uploadResult.secure_url;
+            applicationData.resumeFileName = resumeFile.name;
+
             // Sent to our own /api route (Vercel serverless function), which holds the
             // Zoho ZeptoMail secret token and does the actual send. Never call ZeptoMail
             // directly from the browser -- that would expose the secret token to anyone
@@ -879,6 +902,11 @@ const HiringPage = () => {
                                              <div className="md:col-span-2">
                                                  <label htmlFor="coachProfile" className="block text-sm font-medium text-gray-300 mb-2">Coach Profile *</label>
                                                  <textarea name="coachProfile" id="coachProfile" rows="5" required placeholder="Tell us about your coaching background, achievements, and teaching approach." className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                                             </div>
+                                             <div className="md:col-span-2">
+                                                 <label htmlFor="resume" className="block text-sm font-medium text-gray-300 mb-2">Resume *</label>
+                                                 <input type="file" name="resume" id="resume" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required className="w-full bg-gray-700 border border-gray-600 rounded-md p-3 text-white file:mr-4 file:rounded-md file:border-0 file:bg-amber-500 file:px-4 file:py-2 file:font-semibold file:text-gray-900 hover:file:bg-amber-400" />
+                                                 <p className="mt-2 text-sm text-gray-400">PDF or Word document, maximum 10 MB.</p>
                                              </div>
                                          </div>
                                          <div className="mt-8">

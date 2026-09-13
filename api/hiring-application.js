@@ -23,17 +23,30 @@ export default async function handler(req, res) {
         city,
         state,
         country,
-        coachProfile
+        coachProfile,
+        resumeUrl,
+        resumeFileName
     } = req.body || {};
 
     // Basic required-field validation (mirrors the `required` attributes on the form)
-    const required = { firstName, lastName, phone, email, address, city, state, country, coachProfile };
+    const required = { firstName, lastName, phone, email, address, city, state, country, coachProfile, resumeUrl };
     const missing = Object.entries(required)
         .filter(([, value]) => !value || !String(value).trim())
         .map(([key]) => key);
 
     if (missing.length > 0) {
         return res.status(400).json({ error: `Missing required field(s): ${missing.join(', ')}` });
+    }
+
+    let parsedResumeUrl;
+    try {
+        parsedResumeUrl = new URL(resumeUrl);
+    } catch {
+        return res.status(400).json({ error: 'Resume URL is invalid' });
+    }
+
+    if (parsedResumeUrl.protocol !== 'https:' || parsedResumeUrl.hostname !== 'res.cloudinary.com') {
+        return res.status(400).json({ error: 'Resume must be stored in Cloudinary' });
     }
 
     const {
@@ -79,7 +92,9 @@ export default async function handler(req, res) {
                 city: city.trim(),
                 state: state.trim(),
                 country: country.trim(),
-                coachProfile: coachProfile.trim()
+                coachProfile: coachProfile.trim(),
+                resumeUrl: resumeUrl.trim(),
+                resumeFileName: (resumeFileName && resumeFileName.trim()) || 'Resume'
             }
         });
 
@@ -107,7 +122,9 @@ export default async function handler(req, res) {
                 city: city.trim(),
                 state: state.trim(),
                 country: country.trim(),
-                coachProfile: coachProfile.trim()
+                coachProfile: coachProfile.trim(),
+                resumeUrl: resumeUrl.trim(),
+                resumeFileName: (resumeFileName && resumeFileName.trim()) || 'Resume'
             }
         });
 
