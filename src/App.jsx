@@ -3,7 +3,10 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import emailjs from 'https://esm.sh/@emailjs/browser@4';
-import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, Trash2, Edit, Brain, Target } from 'lucide-react';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { PAGE_META, SITE_URL, FAQS } from './seo.js';
+import { Crown, Menu, X, Award, BookOpenCheck, Users, Trophy, Globe, BarChart3, CheckCircle2, ArrowRight, ArrowLeft, Facebook, Twitter, Instagram, Youtube, MessageCircle, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, Clock, CalendarCheck, ClipboardList, PenLine, RefreshCw, ScanSearch, Lightbulb, GraduationCap, Medal, Swords, Trash2, Edit, Brain, Target } from 'lucide-react';
 
 
 
@@ -28,6 +31,7 @@ const CLOUDINARY_UPLOAD_PRESET = "kjmp2cvx";
 
 // WhatsApp Configuration
 const WHATSAPP_PHONE_NUMBER = "17325682619";
+const CALENDLY_URL = "https://calendly.com/radiancechessacademy-online/30min";
 const WHATSAPP_PREDEFINED_MESSAGE = "Hello! I would like to book a free trial.";
 
 // --- Initialize Firebase ---
@@ -46,6 +50,55 @@ const createSlug = (text) => {
         .replace(/[^\w\-]+/g, '')    // Remove all non-word chars
         .replace(/\-\-+/g, '-');     // Replace multiple - with single -
 };
+
+// Blog post URL slug, e.g. smart-kid-of-the-month-from-usa-{month}-{year}-{studentName}
+const postSlug = (post) => {
+    const nameSlug = createSlug(post.studentName);
+    if (post.month && post.year) {
+        return `smart-kid-of-the-month-from-usa-${createSlug(post.month)}-${createSlug(post.year)}-${nameSlug}`;
+    }
+    return nameSlug;
+};
+
+const pathFor = (page, data) => {
+    if (page === 'blog-detail' && data) return `/blog/${postSlug(data)}`;
+    return PAGE_META[page]?.path || '/';
+};
+
+// Update <title>, description, canonical and social tags when the page changes.
+const applyMeta = ({ title, description, path, noindex = false }) => {
+    const url = `${SITE_URL}${path}`;
+    const set = (selector, attr, value) => {
+        const el = document.head.querySelector(selector);
+        if (el && value != null) el.setAttribute(attr, value);
+    };
+    document.title = title;
+    set('meta[name="description"]', 'content', description);
+    set('link[rel="canonical"]', 'href', url);
+    set('meta[name="robots"]', 'content', noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large');
+    set('meta[property="og:title"]', 'content', title);
+    set('meta[property="og:description"]', 'content', description);
+    set('meta[property="og:url"]', 'content', url);
+    set('meta[name="twitter:title"]', 'content', title);
+    set('meta[name="twitter:description"]', 'content', description);
+};
+
+// A real <a href> (so search engines and "open in new tab" work) that navigates in-app on a normal click.
+const AppLink = ({ to, data, anchor = '', navigate, onNavigate, className, children, ...rest }) => (
+    <a
+        href={`${pathFor(to, data)}${anchor}`}
+        className={className}
+        onClick={(e) => {
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            navigate(to, data, anchor);
+            if (onNavigate) onNavigate();
+        }}
+        {...rest}
+    >
+        {children}
+    </a>
+);
 
 
 // --- Reusable Components ---
@@ -96,7 +149,15 @@ const AnimatedSection = ({ children, className = '' }) => {
     );
 };
 
-const Header = ({ setPage, setHomeView, navigate }) => {
+const NAV_LINKS = [
+    { name: 'Services', to: 'services' },
+    { name: 'Blog', to: 'blog' },
+    { name: 'FAQ', to: 'faq' },
+    { name: 'Coach Hiring', to: 'hiring' },
+    { name: 'Contact', to: 'contact' },
+];
+
+const Header = ({ navigate }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -104,60 +165,31 @@ const Header = ({ setPage, setHomeView, navigate }) => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleNavClick = (page, anchor = '') => {
-        if (page === 'home') {
-            setHomeView('main');
-        }
-        // Use the navigate function if provided, otherwise fallback to setPage
-        if (navigate) {
-            navigate(page);
-        } else {
-            setPage(page);
-        }
-
-        if (anchor) {
-            setTimeout(() => {
-                const element = document.querySelector(anchor);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }
-        setIsMobileMenuOpen(false);
-    };
-
-    const navLinks = [
-        { name: 'Features', page: 'home', anchor: '#features' },
-        { name: 'Blog', page: 'home', anchor: '#blog' },
-        { name: 'Coach Hiring', page: 'hiring' },
-        { name: 'Contact', page: 'contact' },
-        { name: 'Terms&Policies', page: 'terms' },
-        { name: 'FAQ', page: 'home', anchor: '#faq' },
-    ];
+    const closeMenu = () => setIsMobileMenuOpen(false);
 
     return (
         <header className={`sticky top-0 z-40 border-b border-gray-700 transition-all duration-300 ${scrolled ? 'bg-gray-900/95 backdrop-blur-xl shadow-lg' : 'bg-gray-900/70 backdrop-blur-lg'}`}>
-            <div className={`container mx-auto px-4 sm:px-6 flex justify-between items-center transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
-                <a onClick={() => handleNavClick('home')} className="cursor-pointer text-lg sm:text-2xl font-bold text-amber-400 flex items-center hover:text-amber-300 transition-colors duration-200">
-                    <img src="/icon.png" alt="Radiance Chess Academy Logo" className={`mr-3 rounded-full object-cover transition-all duration-300 ${scrolled ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-10 w-10 sm:h-12 sm:w-12'}`} />
-                    Radiance Chess Academy
-                </a>
-                <nav className="hidden md:flex items-center space-x-6">
-                    {navLinks.map(link => (
-                        <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer text-base font-medium text-gray-300 hover:text-amber-400 transition-all duration-200 hover:underline underline-offset-4">
+            <div className={`container mx-auto px-4 sm:px-6 flex justify-between items-center gap-3 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3 sm:py-4'}`}>
+                <AppLink to="home" navigate={navigate} onNavigate={closeMenu} className="min-w-0 text-base sm:text-2xl font-bold text-amber-400 flex items-center hover:text-amber-300 transition-colors duration-200">
+                    <img src="/icon.png" alt="Radiance Chess Academy Logo" width="48" height="48" className={`mr-2 sm:mr-3 rounded-full object-cover flex-shrink-0 transition-all duration-300 ${scrolled ? 'h-8 w-8 sm:h-10 sm:w-10' : 'h-10 w-10 sm:h-12 sm:w-12'}`} />
+                    <span className="truncate">Radiance Chess Academy</span>
+                </AppLink>
+                <nav aria-label="Main" className="hidden lg:flex items-center space-x-6">
+                    {NAV_LINKS.map(link => (
+                        <AppLink key={link.name} to={link.to} anchor={link.anchor} navigate={navigate} className="text-base font-medium text-gray-300 hover:text-amber-400 transition-all duration-200 hover:underline underline-offset-4">
                             {link.name}
-                        </a>
+                        </AppLink>
                     ))}
                 </nav>
-                <div className="flex items-center">
-                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
+                <div className="flex items-center flex-shrink-0">
+                    <AppLink to="book-free-trial" navigate={navigate} className="hidden sm:inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg text-sm sm:text-base transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
                         Book FREE Trial
-                    </a>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden ml-2 p-2 text-gray-400 hover:text-white relative h-6 w-6 transition-colors">
+                    </AppLink>
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'} aria-expanded={isMobileMenuOpen} className="lg:hidden ml-2 p-2 text-gray-400 hover:text-white relative h-10 w-10 flex items-center justify-center transition-colors">
                          <Menu className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 rotate-90' : 'opacity-100 rotate-0'}`} />
                          <X className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-90'}`} />
                     </button>
@@ -165,60 +197,67 @@ const Header = ({ setPage, setHomeView, navigate }) => {
             </div>
             {/* Animated Mobile Menu */}
             <div className={`
-                md:hidden bg-gray-800 border-t border-gray-700
+                lg:hidden bg-gray-800 border-t border-gray-700
                 overflow-hidden transition-all duration-500 ease-in-out
-                ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+                ${isMobileMenuOpen ? 'max-h-[28rem] opacity-100' : 'max-h-0 opacity-0'}
             `}>
-                <div className="py-2">
-                    {navLinks.map(link => (
-                        <a key={link.name} onClick={() => handleNavClick(link.page, link.anchor)} className="cursor-pointer block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
+                <nav aria-label="Mobile" className="py-2">
+                    {NAV_LINKS.map(link => (
+                        <AppLink key={link.name} to={link.to} anchor={link.anchor} navigate={navigate} onNavigate={closeMenu} className="block py-3 px-6 text-base text-gray-300 hover:bg-gray-700 hover:text-amber-400 transition">
                             {link.name}
-                        </a>
+                        </AppLink>
                     ))}
-                    <a onClick={() => handleNavClick('home', '#enroll')} className="cursor-pointer block py-3 px-6 text-amber-400 font-bold hover:bg-gray-700 transition">
+                    <AppLink to="book-free-trial" navigate={navigate} onNavigate={closeMenu} className="block py-3 px-6 text-amber-400 font-bold hover:bg-gray-700 transition">
                         Book FREE Trial
-                    </a>
-                </div>
+                    </AppLink>
+                </nav>
             </div>
         </header>
     );
 };
 
-const Footer = ({ setPage, navigate }) => {
-    
-    const handleNavClick = (page) => {
-        if(navigate) {
-            navigate(page);
-        } else {
-            setPage(page);
-        }
-    }
+const FOOTER_LINKS = [
+    { name: 'Book a Free Trial', to: 'book-free-trial' },
+    { name: 'Classes & Services', to: 'services' },
+    { name: 'Smart Kids Blog', to: 'blog' },
+    { name: 'FAQ', to: 'faq' },
+    { name: 'Coach Hiring', to: 'hiring' },
+    { name: 'Contact Us', to: 'contact' },
+    { name: 'Terms & Policies', to: 'terms' },
+];
 
-    return (
-        <footer className="bg-gray-900 text-white border-t border-gray-700 mt-auto">
-            <div className="container mx-auto px-6 py-8">
-                <div className="md:flex md:justify-between items-center text-center md:text-left">
-                    <div className="mb-4 md:mb-0">
-                        <a onClick={() => handleNavClick('home')} className="cursor-pointer text-xl font-bold text-amber-400 flex items-center justify-center md:justify-start hover:text-amber-300 transition-colors duration-200">
-                            <img src="/icon.png" alt="Radiance Chess Academy Logo" className="mr-3 h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover" />
-                            Radiance Chess Academy
-                        </a>
-                        <p className="text-gray-400 mt-2">Nurturing the next generation of chess champions.</p>
-                    </div>
-                    <div className="flex justify-center space-x-6 mt-4 md:mt-0">
-                        <a href="https://www.facebook.com/share/1BYErEka53/" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Facebook /></a>
-                        <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Instagram /></a>
+const Footer = ({ navigate }) => (
+    <footer className="bg-gray-900 text-white border-t border-gray-700 mt-auto">
+        <div className="container mx-auto px-4 sm:px-6 py-8">
+            <div className="md:flex md:justify-between md:items-start gap-8 text-center md:text-left">
+                <div className="mb-6 md:mb-0">
+                    <AppLink to="home" navigate={navigate} className="text-xl font-bold text-amber-400 inline-flex items-center justify-center md:justify-start hover:text-amber-300 transition-colors duration-200">
+                        <img src="/icon.png" alt="Radiance Chess Academy Logo" width="36" height="36" loading="lazy" className="mr-3 h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover" />
+                        Radiance Chess Academy
+                    </AppLink>
+                    <p className="text-gray-400 mt-2">Nurturing the next generation of chess champions.</p>
+                    <div className="flex justify-center md:justify-start space-x-6 mt-4">
+                        <a href="https://www.facebook.com/share/1BYErEka53/" target="_blank" rel="noopener noreferrer" aria-label="Radiance Chess Academy on Facebook" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Facebook /></a>
+                        <a href="https://www.instagram.com/radiancechessacademy?igsh=MXBjYTJyam9iemI0Zw==" target="_blank" rel="noopener noreferrer" aria-label="Radiance Chess Academy on Instagram" className="text-gray-400 hover:text-amber-400 transition-colors duration-200 hover:scale-110 transform"><Instagram /></a>
                     </div>
                 </div>
-                 <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm flex flex-col sm:flex-row justify-center items-center gap-x-4 gap-y-2">
-                    <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
-                    <span className="hidden sm:inline">|</span>
-                    <a onClick={() => handleNavClick('terms')} className="cursor-pointer hover:text-amber-400 transition-colors duration-200">Terms & Policies</a>
-                </div>
+                <nav aria-label="Quick links">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-3">Quick Links</h2>
+                    <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-gray-400">
+                        {FOOTER_LINKS.map(link => (
+                            <li key={link.to}>
+                                <AppLink to={link.to} navigate={navigate} className="hover:text-amber-400 transition-colors duration-200">{link.name}</AppLink>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
             </div>
-        </footer>
-    );
-};
+            <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm">
+                <p>&copy; {new Date().getFullYear()} Radiance Chess Academy. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+);
 
 const WhatsAppButton = () => {
     return (
@@ -340,18 +379,15 @@ const BlogDetailPage = ({ slug, navigate }) => {
                 
                 const foundPost = querySnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .find(p => {
-                         // Reconstruct slug for comparison based on NEW format
-                         let pSlug = createSlug(p.studentName);
-                         if (p.month && p.year) {
-                             const prefix = "smart-kid-of-the-month-from-usa";
-                             pSlug = `${prefix}-${createSlug(p.month)}-${createSlug(p.year)}-${pSlug}`;
-                         }
-                         return pSlug === slug;
-                    });
+                    .find(p => postSlug(p) === slug);
 
                 if (foundPost) {
                     setPost(foundPost);
+                    applyMeta({
+                        title: `${foundPost.title || 'Smart Kid of the Month'} | Radiance Chess Academy`,
+                        description: (foundPost.summary || PAGE_META.blog.description).slice(0, 160),
+                        path: `/blog/${slug}`,
+                    });
                 } else {
                     setError(true);
                 }
@@ -377,9 +413,9 @@ const BlogDetailPage = ({ slug, navigate }) => {
     return (
         <main className="py-20 md:py-32">
             <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 max-w-4xl bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
-                <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8 transition-colors duration-200 hover:-translate-x-1 transform">
-                    <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
-                </button>
+                <AppLink to="blog" navigate={navigate} className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8 transition-colors duration-200 hover:-translate-x-1 transform">
+                    <ArrowLeft className="mr-2 h-5 w-5" /> All Smart Kids Stories
+                </AppLink>
                 <div className="prose prose-invert prose-lg max-w-none">
                     <h1 className="text-3xl md:text-5xl font-bold text-white mb-6">{post.title || 'Untitled Post'}</h1>
                     <p className="text-xl text-gray-300 mb-10">{post.summary || 'No summary available.'}</p>
@@ -404,7 +440,7 @@ const BlogDetailPage = ({ slug, navigate }) => {
     );
 };
 
-const HomePage = ({ view, setView, navigateToPost, navigate }) => {
+const HomePage = ({ view, navigate }) => {
     const [blogPosts, setBlogPosts] = useState([]);
 
     useEffect(() => {
@@ -416,12 +452,8 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
         return () => unsubscribe();
     }, []);
 
-    const handleViewDetail = (post) => {
-        navigateToPost(post);
-    };
-
-    const PostCard = ({ post, onCardClick }) => (
-        <div onClick={() => onCardClick(post)} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 hover:border-amber-500 flex flex-col group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 h-full transform hover:-translate-y-1'>
+    const PostCard = ({ post }) => (
+        <AppLink to="blog-detail" data={post} navigate={navigate} className='bg-gray-800/80 rounded-lg overflow-hidden border border-gray-700 hover:border-amber-500 flex flex-col group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 h-full transform hover:-translate-y-1'>
             <div className="overflow-hidden flex items-center justify-center h-48 relative bg-gray-700" style={{backgroundImage: `url(${post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
                 <div className="absolute inset-0" style={{backgroundImage: `url(${post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(8px)', zIndex: 0}}></div>
                 <img src={post?.studentImageUrl || 'https://placehold.co/600x400/1f2937/a855f7?text=Image'} alt={`Photo of ${post?.studentName || 'Student'}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 relative z-10" onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}/>
@@ -432,22 +464,22 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                 <p className="mt-2 text-gray-400 text-sm flex-grow line-clamp-3">{post?.summary || 'No summary available.'}</p>
                 <span className="mt-4 text-amber-400 font-semibold inline-flex items-center group-hover:text-amber-300 transition-colors duration-300">Read More <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" /></span>
             </div>
-        </div>
+        </AppLink>
     );
 
     if (view === 'allPosts') {
         return (
             <div className="py-20 md:py-32">
                  <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 bg-gray-900/80 backdrop-blur-md rounded-2xl border border-gray-700">
-                    <div className="flex justify-between items-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">All "Smart Kid of the Month" Posts</h2>
-                        <button onClick={() => navigate('home')} className="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 hover:-translate-x-1 transform">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-12">
+                        <h1 className="text-3xl md:text-4xl font-bold text-white">Smart Kids of the Month</h1>
+                        <AppLink to="home" navigate={navigate} className="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 hover:-translate-x-1 transform">
                             <ArrowLeft className="mr-2 h-5 w-5" /> Back to Home
-                        </button>
+                        </AppLink>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogPosts.length > 0 ? blogPosts.map((post) => (
-                            <PostCard key={post.id} post={post} onCardClick={handleViewDetail} />
+                            <PostCard key={post.id} post={post} />
                         )) : <p className="text-gray-400 col-span-full text-center">No posts yet.</p>}
                     </div>
                 </div>
@@ -467,9 +499,9 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                         Join our fun & interactive online classes for kids aged 5-16. Our FIDE-rated coaches are here to guide your child from their first move to checkmate.
                     </p>
                     <div className="mt-10">
-                        <a href="#enroll" className="nav-link cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-10 rounded-lg text-lg transition-all duration-200 inline-block hover:shadow-lg hover:shadow-amber-500/50 hover:-translate-y-1">
+                        <AppLink to="book-free-trial" navigate={navigate} className="cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-8 sm:px-10 rounded-lg text-lg transition-all duration-200 inline-block hover:shadow-lg hover:shadow-amber-500/50 hover:-translate-y-1">
                             Enroll for a FREE Trial Class
-                        </a>
+                        </AppLink>
                     </div>
                 </div>
             </section>
@@ -482,6 +514,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                             <div className="md:w-1/2 mb-8 md:mb-0">
                                 <img
                                     src="/why.png"
+                                    loading="lazy"
                                     alt="Child thinking over a chessboard"
                                     className="rounded-lg shadow-lg w-full h-auto object-cover"
                                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}
@@ -529,6 +562,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                             <div className="md:w-1/2 mb-8 md:mb-0">
                                 <img
                                     src="/our_purpose.png"
+                                    loading="lazy"
                                     alt="Diverse group of kids playing chess"
                                     className="rounded-lg shadow-lg w-full h-auto object-cover"
                                      onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/1f2937/a855f7?text=Image+Error"; }}
@@ -567,7 +601,7 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                                 {blogPosts.slice(0, 3).map((post, index) => (
                                     <div key={post.id}>
-                                        <PostCard post={post} onCardClick={handleViewDetail}/>
+                                        <PostCard post={post} />
                                     </div>
                                 ))}
                             </div>
@@ -577,9 +611,9 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
 
                         {blogPosts.length > 3 && (
                             <div className="text-center mt-12">
-                                <button onClick={() => navigate('all-posts')} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:text-amber-300 inline-flex items-center">
+                                <AppLink to="blog" navigate={navigate} className="cta-button bg-gray-700 hover:bg-gray-600 text-amber-400 font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:text-amber-300 inline-flex items-center">
                                     View All Posts <ArrowRight className="ml-2 h-4 w-4" />
-                                </button>
+                                </AppLink>
                             </div>
                         )}
                     </div>
@@ -644,9 +678,9 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                                                 <p className="text-gray-200 italic leading-relaxed text-sm">"{summarizeFeedback(post?.parentFeedback)}"</p>
                                                 
                                                 {/* Learn More Button */}
-                                                <button onClick={() => navigateToPost(post)} className="mt-4 inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 font-semibold text-sm">
+                                                <AppLink to="blog-detail" data={post} navigate={navigate} className="mt-4 inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors duration-200 font-semibold text-sm">
                                                     View Full Story <ArrowRight className="ml-2 h-4 w-4" />
-                                                </button>
+                                                </AppLink>
                                             </div>
                                         </div>
                                     );
@@ -667,12 +701,8 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
                 <section id="faq" className="py-20">
                     <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                              <div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
-                             <div className="space-y-4">
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">What is the right age for a child to start learning chess?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">The ideal age to start learning chess is typically between 5 and 7 years old. However, we have programs tailored for children up to 16 years. It's never too late to start!</p></details>
-
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">Do you prepare students for rated tournaments?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">Yes, absolutely. Our advanced curriculum is specifically designed to prepare students for FIDE-rated tournaments. We provide specialized training, opening preparation, and tournament strategy sessions.</p></details>
-                                 <details className="bg-gray-800/80 p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer"><summary className="flex justify-between items-center font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">Can we change our batch timings after enrollment?<ChevronDown className="h-6 w-6 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400"/></summary><p className="text-gray-400 mt-4">We offer flexibility to change batches based on availability. Please contact our support team, and they will do their best to find a suitable slot that works for your new schedule.</p></details>
-                            </div>
+                             <FaqList />
+                             <p className="text-center mt-8"><AppLink to="faq" navigate={navigate} className="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-4">See all FAQs</AppLink></p>
                     </div>
                 </section>
             </AnimatedSection>
@@ -681,97 +711,526 @@ const HomePage = ({ view, setView, navigateToPost, navigate }) => {
     )
 };
 
-const TrialForm = ({ isPopup = false, onClose = () => {} }) => {
+// --- Calendly booking step (shown after the trial form is submitted) ---
+let calendlyScriptPromise = null;
+const loadCalendly = () => {
+    if (window.Calendly) return Promise.resolve(window.Calendly);
+    if (!calendlyScriptPromise) {
+        calendlyScriptPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://assets.calendly.com/assets/external/widget.js';
+            script.async = true;
+            script.onload = () => (window.Calendly ? resolve(window.Calendly) : reject(new Error('Calendly not available')));
+            script.onerror = () => {
+                calendlyScriptPromise = null;
+                reject(new Error('Calendly script failed to load'));
+            };
+            document.body.appendChild(script);
+        });
+    }
+    return calendlyScriptPromise;
+};
+
+// Hide Calendly's event-details header so the calendar is the first thing parents see.
+const CALENDLY_EMBED_URL = `${CALENDLY_URL}?hide_event_type_details=1&hide_landing_page_details=1&hide_gdpr_banner=1`;
+
+const getBookingPrefill = (form) => {
+    const data = new FormData(form);
+    return {
+        name: String(data.get('parentName') || '').trim(),
+        email: String(data.get('parentEmail') || '').trim(),
+        customAnswers: {
+            a1: [
+                `Child's Name: ${data.get('childName') || ''}`,
+                `Child's Age: ${data.get('childAge') || ''}`,
+                `Chess Experience: ${data.get('chessExperience') || ''}`,
+                `WhatsApp: ${data.get('parentPhone') || ''}`,
+            ].join('\n'),
+        },
+    };
+};
+
+// Plain link used if the Calendly script is blocked (e.g. by an ad blocker).
+const calendlyFallbackUrl = (prefill) => {
+    const params = new URLSearchParams({ name: prefill.name, email: prefill.email, a1: prefill.customAnswers.a1 });
+    return `${CALENDLY_URL}?${params.toString()}`;
+};
+
+const CalendlyStep = ({ prefill, isPopup = false }) => {
+    const containerRef = useRef(null);
+    const [height, setHeight] = useState(isPopup ? 640 : 720);
+    const [loadFailed, setLoadFailed] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        loadCalendly()
+            .then((Calendly) => {
+                if (cancelled || !containerRef.current) return;
+                containerRef.current.innerHTML = '';
+                Calendly.initInlineWidget({ url: CALENDLY_EMBED_URL, parentElement: containerRef.current, prefill, resize: true });
+            })
+            .catch((err) => {
+                console.error(err);
+                if (!cancelled) setLoadFailed(true);
+            });
+        return () => { cancelled = true; };
+    }, [prefill]);
+
+    // Grow the embed to fit Calendly's content so there is no scrolling inside the box.
+    useEffect(() => {
+        const onMessage = (e) => {
+            if (e.origin !== 'https://calendly.com' || typeof e.data?.event !== 'string') return;
+            if (e.data.event === 'calendly.page_height') {
+                const h = parseInt(e.data.payload?.height, 10);
+                // Calendly reports tiny heights while loading; ignore those so the box doesn't collapse.
+                if (h >= 300) setHeight(h);
+            } else if (e.data.event === 'calendly.event_scheduled' && typeof window.fbq === 'function') {
+                window.fbq('track', 'Schedule');
+            }
+        };
+        window.addEventListener('message', onMessage);
+        return () => window.removeEventListener('message', onMessage);
+    }, []);
+
+    return (
+        <div>
+            <div className="flex items-center justify-center text-green-400 mb-1">
+                <CheckCircle2 className="h-5 w-5 mr-2 flex-shrink-0" />
+                <span className="font-semibold">Details received!</span>
+            </div>
+            <p className="text-center text-gray-300 mb-4 text-sm sm:text-base">Last step: pick a convenient time for your FREE trial class.</p>
+            {loadFailed ? (
+                <div className="text-center py-8">
+                    <a href={calendlyFallbackUrl(prefill)} target="_blank" rel="noopener noreferrer" className="inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-all duration-200">
+                        Choose Your Time Slot
+                    </a>
+                </div>
+            ) : (
+                <div ref={containerRef} className="w-full rounded-lg overflow-hidden bg-white transition-[height] duration-300" style={{ minWidth: 280, height }} />
+            )}
+        </div>
+    );
+};
+
+// --- Trial form ---
+const TRIAL_BENEFITS = [
+    '1-on-1 interaction with a senior coach',
+    'Experience our unique teaching method',
+    "Understand your child's strengths & weaknesses",
+];
+
+const trialInputClass = 'w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-base text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200';
+
+// WhatsApp number with a searchable country picker (flags). Defaults to the US.
+// Submits the formatted number as "parentPhone" (e.g. "+1 (732) 568-2619") so the
+// EmailJS template keeps working unchanged.
+const PREFERRED_COUNTRIES = ['us', 'ca', 'in', 'gb', 'au', 'ae', 'sg'];
+
+const PhoneField = () => {
+    const wrapperRef = useRef(null);
+    const [value, setValue] = useState('');
+    const [formatted, setFormatted] = useState('');
+    const [dialCode, setDialCode] = useState('1');
+
+    // Only the country code typed is not a valid number: block submit with a clear message.
+    useEffect(() => {
+        const input = wrapperRef.current?.querySelector('input');
+        if (!input) return;
+        const nationalDigits = value.slice(dialCode.length);
+        input.setCustomValidity(nationalDigits.length >= 6 ? '' : 'Please enter your WhatsApp number');
+    }, [value, dialCode]);
+
+    return (
+        <div ref={wrapperRef}>
+            <PhoneInput
+                country="us"
+                preferredCountries={PREFERRED_COUNTRIES}
+                enableSearch
+                disableSearchIcon
+                searchPlaceholder="Search country or code"
+                searchNotFound="No country found"
+                placeholder="WhatsApp Number"
+                value={value}
+                onChange={(val, country, _e, formattedValue) => {
+                    setValue(val);
+                    setFormatted(formattedValue);
+                    if (country?.dialCode) setDialCode(country.dialCode);
+                }}
+                inputProps={{ required: true, 'aria-label': 'WhatsApp Number', autoComplete: 'tel' }}
+                containerClass="rca-phone"
+            />
+            <input type="hidden" name="parentPhone" value={formatted} />
+        </div>
+    );
+};
+
+const TrialFields = ({ isLoading, submitLabel, compact = false }) => (
+    <div className={compact ? 'space-y-3 sm:space-y-4' : 'space-y-4 sm:space-y-5'}>
+        <input name="parentName" type="text" placeholder="Parent's Name" aria-label="Parent's Name" autoComplete="name" required className={trialInputClass} />
+        <input name="parentEmail" type="email" placeholder="Parent's Email" aria-label="Parent's Email" autoComplete="email" required className={trialInputClass} />
+        <PhoneField />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <input name="childName" type="text" placeholder="Child's Name" aria-label="Child's Name" autoComplete="off" required className={trialInputClass} />
+            <input name="childAge" type="number" inputMode="numeric" placeholder="Child's Age (5-16)" aria-label="Child's Age" required min="5" max="16" className={trialInputClass} />
+        </div>
+        <select name="chessExperience" aria-label="Chess Experience Level" required defaultValue="" className={trialInputClass}>
+            <option value="" disabled>Chess Experience Level</option>
+            <option value="Beginner">Beginner (New to chess)</option>
+            <option value="Intermediate">Intermediate (Knows the rules)</option>
+            <option value="Advanced">Advanced (Plays tournaments)</option>
+        </select>
+        <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 sm:py-4 px-6 rounded-lg text-lg flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed">
+            {isLoading ? <Spinner color="text-gray-900" /> : submitLabel}
+        </button>
+        <p className="text-center text-xs text-gray-400">Next you'll pick a time slot. No payment needed.</p>
+    </div>
+);
+
+// variant: 'section' (home page block), 'page' (/book-free-trial), 'popup' (timed popup)
+const TrialForm = ({ variant = 'section', onBookingStep = () => {} }) => {
+    const isPopup = variant === 'popup';
+    const isPage = variant === 'page';
     const formRef = useRef();
-    const [status, setStatus] = useState({ message: '', type: '' });
+    const sectionRef = useRef();
     const [isLoading, setIsLoading] = useState(false);
+    const [prefill, setPrefill] = useState(null);
+
+    // Bring the calendar into view once it replaces the form.
+    useEffect(() => {
+        if (prefill && !isPopup && sectionRef.current) {
+            sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [prefill, isPopup]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setStatus({ message: '', type: '' });
+
+        // Capture the details before the form is reset so Calendly can be pre-filled.
+        const bookingPrefill = getBookingPrefill(formRef.current);
+        const showBooking = () => {
+            setPrefill(bookingPrefill);
+            onBookingStep();
+        };
 
         emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TRIAL_TEMPLATE_ID, formRef.current, EMAILJS_PUBLIC_KEY)
             .then(() => {
-                setStatus({ message: 'Thank you! Your trial request has been sent.', type: 'success' });
-                formRef.current.reset();
-                if(isPopup) setTimeout(onClose, 2000);
+                if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
+                showBooking();
             }, (error) => {
-                setStatus({ message: 'Oops! Something went wrong. Please try again.', type: 'error' });
+                // Still let the parent book a slot; their details travel with the Calendly booking.
+                console.error('Trial form email failed:', error);
+                showBooking();
             })
             .finally(() => {
                 setIsLoading(false);
             });
     };
 
-    const statusColor = status.type === 'success' ? 'text-green-400' : 'text-red-400';
-
     if (isPopup) {
-         return (
-                <form ref={formRef} onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                        <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                        <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                        <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                        <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-                        <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="" disabled>Chess Experience Level</option>
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advanced">Advanced</option>
-                        </select>
-                        <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-lg flex items-center justify-center">
-                            {isLoading ? <Spinner color="text-gray-900" /> : 'Book My FREE Class'}
-                        </button>
-                    </div>
-                    {status.message && <div className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</div>}
-                </form>
-            )
+        if (prefill) return <CalendlyStep prefill={prefill} isPopup />;
+        return (
+            <form ref={formRef} onSubmit={handleSubmit}>
+                <TrialFields isLoading={isLoading} submitLabel="Book My FREE Class" compact />
+            </form>
+        );
     }
 
+    const Heading = isPage ? 'h1' : 'h2';
+
     return (
-        <section id="enroll" className="py-20">
+        <section id={isPage ? undefined : 'enroll'} ref={sectionRef} className={isPage ? 'py-8 md:py-16' : 'py-12 md:py-20'}>
             <div className="container mx-auto px-4 sm:px-6">
-                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 lg:flex lg:items-center lg:gap-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
-                    <div className="lg:w-1/2 text-center lg:text-left">
-                         <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Chess Journey Today!</h2>
-                         <p className="mt-4 text-gray-300 text-lg leading-relaxed">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
-                         <div className="mt-8 space-y-4 text-gray-300">
-                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>1-on-1 interaction with a senior coach</span></div>
-                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>Experience our unique teaching method</span></div>
-                             <div className="flex items-center justify-center lg:justify-start hover:text-white transition-colors duration-200"><CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0"/><span>Understand your child's strengths & weaknesses</span></div>
+                <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-5 sm:p-8 md:p-12 border-2 border-amber-500 shadow-lg shadow-amber-500/10">
+                    {prefill ? (
+                        <div className="max-w-5xl mx-auto">
+                            <Heading className="text-2xl md:text-3xl font-bold text-white text-center mb-4">Pick a Time for Your FREE Trial Class</Heading>
+                            <CalendlyStep prefill={prefill} />
                         </div>
-                    </div>
-                    <div className="lg:w-1/2 mt-10 lg:mt-0">
-                        <div className="bg-gray-800/80 p-6 sm:p-8 rounded-lg border border-gray-700">
-                            <h3 className="text-2xl font-bold text-center text-white mb-6">Fill in The Details to Enroll</h3>
-                            <form ref={formRef} onSubmit={handleSubmit}>
-                                <div className="space-y-5">
-                                    <input name="parentName" type="text" placeholder="Parent's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
-                                    <input name="parentEmail" type="email" placeholder="Parent's Email" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
-                                    <input name="parentPhone" type="tel" placeholder="Parent's Phone Number" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
-                                    <input name="childName" type="text" placeholder="Child's Name" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
-                                    <input name="childAge" type="number" placeholder="Child's Age" required min="5" max="16" className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200" />
-                                    <select name="chessExperience" required className="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200">
-                                        <option value="" disabled>Chess Experience Level</option>
-                                        <option value="Beginner">Beginner (New to chess)</option>
-                                        <option value="Intermediate">Intermediate (Knows the rules)</option>
-                                        <option value="Advanced">Advanced (Plays tournaments)</option>
-                                    </select>
-                                    <button type="submit" disabled={isLoading} className="w-full cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-4 px-6 rounded-lg text-lg flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        {isLoading ? <Spinner color="text-gray-900" /> : 'Submit & Book My FREE Class'}
-                                    </button>
+                    ) : (
+                        <div className="lg:flex lg:items-center lg:gap-12">
+                            <div className="lg:w-1/2 text-center lg:text-left">
+                                <Heading className="text-3xl md:text-4xl font-bold text-white">
+                                    {isPage ? 'Book a FREE Chess Trial Class' : 'Start Your Chess Journey Today!'}
+                                </Heading>
+                                <p className="mt-4 text-gray-300 text-base sm:text-lg leading-relaxed">Book a <span className="font-bold text-amber-400">FREE, no-obligation</span> trial class and get a detailed performance assessment for your child.</p>
+                                <ul className="mt-6 sm:mt-8 space-y-3 sm:space-y-4 text-gray-300 inline-block text-left">
+                                    {TRIAL_BENEFITS.map((benefit) => (
+                                        <li key={benefit} className="flex items-center hover:text-white transition-colors duration-200">
+                                            <CheckCircle2 className="h-6 w-6 text-green-400 mr-3 flex-shrink-0" /><span>{benefit}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="lg:w-1/2 mt-8 lg:mt-0">
+                                <div className="bg-gray-800/80 p-5 sm:p-8 rounded-lg border border-gray-700">
+                                    {isPage
+                                        ? <h2 className="text-xl sm:text-2xl font-bold text-center text-white mb-5 sm:mb-6">Fill in the Details to Enroll</h2>
+                                        : <h3 className="text-xl sm:text-2xl font-bold text-center text-white mb-5 sm:mb-6">Fill in the Details to Enroll</h3>}
+                                    <form ref={formRef} onSubmit={handleSubmit}>
+                                        <TrialFields isLoading={isLoading} submitLabel="Submit & Book My FREE Class" />
+                                    </form>
                                 </div>
-                            </form>
-                           {status.message && <div className={`mt-4 text-center text-sm ${statusColor}`}>{status.message}</div>}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </section>
-    )
+    );
 };
+
+const FaqList = () => (
+    <div className="space-y-4">
+        {FAQS.map(({ q, a }) => (
+            <details key={q} className="bg-gray-800/80 p-5 sm:p-6 rounded-lg group border border-gray-700 hover:border-amber-500 hover:bg-gray-800 transition-all duration-300 cursor-pointer">
+                <summary className="flex justify-between items-center gap-4 font-semibold text-white cursor-pointer hover:text-amber-400 transition-colors duration-200">
+                    {q}<ChevronDown className="h-6 w-6 flex-shrink-0 transition-transform duration-300 group-open:rotate-180 text-gray-400 group-hover:text-amber-400" />
+                </summary>
+                <p className="text-gray-400 mt-4">{a}</p>
+            </details>
+        ))}
+    </div>
+);
+
+const BookTrialPage = ({ navigate }) => (
+    <main>
+        <TrialForm variant="page" />
+        <section className="pb-12 md:pb-20">
+            <div className="container mx-auto px-4 sm:px-6 max-w-5xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">How the Free Trial Works</h2>
+                <ol className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        ['Fill in the form', "Tell us a little about your child and their chess experience."],
+                        ['Pick a time slot', 'Choose a time that suits you from our live calendar.'],
+                        ['Meet your coach', 'Join a 30-minute 1-on-1 online session and get a performance assessment.'],
+                    ].map(([title, text], i) => (
+                        <li key={title} className="bg-gray-800/80 p-6 rounded-lg border border-gray-700 text-center">
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-xl font-bold text-gray-900">{i + 1}</div>
+                            <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+                            <p className="text-gray-400">{text}</p>
+                        </li>
+                    ))}
+                </ol>
+                <p className="text-center text-gray-400 mt-8">
+                    Have questions? Read our <AppLink to="faq" navigate={navigate} className="text-amber-400 hover:text-amber-300 underline underline-offset-4">FAQ</AppLink> or <AppLink to="contact" navigate={navigate} className="text-amber-400 hover:text-amber-300 underline underline-offset-4">contact us</AppLink>.
+                </p>
+            </div>
+        </section>
+    </main>
+);
+
+// --- Services page (/services) ---
+// Edit these lists to change what the page shows.
+const PROGRAM_STRUCTURE = [
+    { icon: CalendarDays, title: 'Two Live Classes Every Week', text: 'Interactive online classes on Zoom, led by experienced coaches.' },
+    { icon: Clock, title: '45 Minutes Per Class', text: 'Long enough to learn something new, short enough to stay focused.' },
+    { icon: CalendarCheck, title: '8–9 Classes a Month', text: 'Regular, steady practice that keeps progress moving.' },
+    { icon: Users, title: '3–5 Kids Per Class', text: 'Small groups of the same level and age, so every child gets attention.' },
+];
+
+const OTHER_SERVICES = [
+    { icon: ClipboardList, title: 'Monthly Progress Reports', text: "A clear picture of your child's growth, strengths and next steps." },
+    { icon: Trophy, title: 'Tournament Guidance', text: 'Help preparing for and playing in over-the-board tournaments.' },
+    { icon: PenLine, title: 'Assignments & Corrections', text: 'Regular homework with detailed feedback from the coach.' },
+    { icon: RefreshCw, title: 'Makeup Classes', text: 'Missed a class? We help your child catch up.' },
+    { icon: MessageCircle, title: 'Parent–Coach Communication', text: 'Talk to your child\'s coach directly and get quick answers.' },
+    { icon: ScanSearch, title: 'Personal Game Analysis', text: "Your child's own games reviewed to find what to work on." },
+    { icon: Lightbulb, title: 'Quiz Competitions', text: 'Fun chess quizzes that sharpen memory and pattern recognition.' },
+];
+
+const LEVELS = [
+    { name: 'Beginner', text: 'How the pieces move, the rules, basic checkmates and good habits at the board.' },
+    { name: 'Advanced Beginner', text: 'First tactics such as forks and pins, opening principles and keeping pieces safe.' },
+    { name: 'Intermediate 1', text: 'Combining tactics, essential endgames and making simple plans.' },
+    { name: 'Intermediate 2', text: 'Positional ideas, pawn structures and building an opening repertoire.' },
+    { name: 'Advanced 1', text: 'Deeper calculation, complex endgames and preparing for tournaments.' },
+    { name: 'Advanced 2', text: 'Advanced strategy, in-depth game analysis and competing in rated events.' },
+];
+
+const SectionIntro = ({ eyebrow, title, text }) => (
+    <div className="text-center mb-10 md:mb-14">
+        <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-amber-400">{eyebrow}</p>
+        <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">{title}</h2>
+        {text && <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">{text}</p>}
+    </div>
+);
+
+// Card with an icon, title and short text (used on the services page).
+const IconCard = ({ item, className, centered = false }) => {
+    const Icon = item.icon;
+    return (
+        <div className={`${className} ${centered ? 'text-center' : ''}`}>
+            {centered
+                ? <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/10"><Icon className="h-7 w-7 text-amber-400" /></div>
+                : <Icon className="h-8 w-8 text-amber-400 mb-4" />}
+            <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
+            <p className="text-gray-400 text-sm sm:text-base">{item.text}</p>
+        </div>
+    );
+};
+
+const ServicesPage = ({ navigate }) => {
+    const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+    const card = 'bg-gray-800/80 p-6 rounded-xl border border-gray-700 hover:border-amber-500 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10';
+    const panel = 'container mx-auto px-4 sm:px-6 bg-gray-900/75 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700';
+
+    return (
+        <main>
+            {/* Hero */}
+            <section className="py-8 md:py-16">
+                <div className="container mx-auto px-4 sm:px-6">
+                    <div className="bg-gray-900/75 backdrop-blur-md rounded-2xl border border-gray-700 overflow-hidden lg:flex lg:items-stretch">
+                        <div className="p-6 sm:p-10 lg:p-14 lg:w-1/2 flex flex-col justify-center text-center lg:text-left">
+                            <p className="inline-flex items-center justify-center lg:justify-start text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-amber-400">
+                                <GraduationCap className="h-5 w-5 mr-2" /> Our Chess Program
+                            </p>
+                            <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                                Online Chess Classes <span className="text-amber-400">for Growing Minds</span>
+                            </h1>
+                            <p className="mt-5 text-base sm:text-lg text-gray-300 leading-relaxed">
+                                Live, level-based chess classes for kids aged 5 to 16 that build focus, confidence and clear thinking, all from home.
+                            </p>
+                            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                                <AppLink to="book-free-trial" navigate={navigate} className="cta-button inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
+                                    Book a FREE Trial <ArrowRight className="ml-2 h-5 w-5" />
+                                </AppLink>
+                                <a href={whatsappUrl('Hello! I would like to know more about your chess classes.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center border border-gray-600 hover:border-green-500 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200">
+                                    <img src="/icons8-whatsapp.svg" alt="" className="mr-2 h-5 w-5" /> Ask on WhatsApp
+                                </a>
+                            </div>
+                            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start text-sm text-gray-300">
+                                {['Ages 5 to 16', 'Live online classes', 'Level-based groups'].map((item) => (
+                                    <li key={item} className="flex items-center"><CheckCircle2 className="h-4 w-4 mr-1.5 text-green-400" />{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="lg:w-1/2 min-h-[240px] sm:min-h-[320px]">
+                            <img src="/why.png" alt="Child thinking about a chess move" className="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Program structure */}
+            <AnimatedSection>
+                <section className="py-8 md:py-12">
+                    <div className={panel}>
+                        <SectionIntro eyebrow="Program at a glance" title="Our Program Structure" text="A clear, steady learning routine your child can count on." />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+                            {PROGRAM_STRUCTURE.map((item) => (
+                                <IconCard key={item.title} item={item} className={card} centered />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Practice sessions */}
+            <AnimatedSection>
+                <section className="py-8 md:py-12">
+                    <div className="container mx-auto px-4 sm:px-6">
+                        <div className="rounded-2xl border-2 border-amber-500 bg-gray-900/80 backdrop-blur-md p-6 sm:p-8 md:p-12 md:flex md:items-center md:gap-10 shadow-lg shadow-amber-500/10">
+                            <div className="md:w-2/3 text-center md:text-left">
+                                <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-amber-400">More practice, faster progress</p>
+                                <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">Weekend Practice Sessions</h2>
+                                <p className="mt-4 text-gray-300 text-base sm:text-lg leading-relaxed">
+                                    Two extra practice sessions every week, on <span className="font-semibold text-white">Saturday and Sunday</span>, at your child's level, to lock in what they learned and build confidence over the board.
+                                </p>
+                            </div>
+                            <div className="md:w-1/3 mt-8 md:mt-0 grid grid-cols-2 gap-4">
+                                {['Saturday', 'Sunday'].map((day) => (
+                                    <div key={day} className="rounded-xl bg-amber-500 text-gray-900 p-5 text-center">
+                                        <Swords className="mx-auto h-7 w-7 mb-2" />
+                                        <p className="font-extrabold text-lg">{day}</p>
+                                        <p className="text-sm font-medium">Practice</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Other services */}
+            <AnimatedSection>
+                <section className="py-8 md:py-12">
+                    <div className={panel}>
+                        <SectionIntro eyebrow="Support at every step" title="What Else Is Included" text="Everything around the classes that helps your child keep improving." />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+                            {OTHER_SERVICES.map((item) => (
+                                <IconCard key={item.title} item={item} className={card} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Levels */}
+            <AnimatedSection>
+                <section id="levels" className="py-8 md:py-12">
+                    <div className={panel}>
+                        <SectionIntro eyebrow="A level for every child" title="Our 6-Level Learning Path" text="Every level includes two live group classes a week (8–9 classes a month). The free trial tells us where your child should start." />
+                        <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+                            {LEVELS.map(({ name, text }, i) => (
+                                <li key={name} className={`${card} flex gap-4`}>
+                                    <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-500 text-lg font-extrabold text-gray-900">{String(i + 1).padStart(2, '0')}</span>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">{name}</h3>
+                                        <p className="mt-1 text-gray-400 text-sm sm:text-base">{text}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ol>
+                        <div className="mt-10 rounded-xl bg-gray-800/80 border border-gray-700 p-6 sm:p-8 text-center md:flex md:items-center md:justify-between md:text-left gap-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Want the fee for your child's level?</h3>
+                                <p className="mt-2 text-gray-400">Message us for current plan details and a level recommendation.</p>
+                            </div>
+                            <a href={whatsappUrl("Hello! I'd like the fee details for your chess classes.")} target="_blank" rel="noopener noreferrer" className="mt-5 md:mt-0 inline-flex flex-shrink-0 items-center justify-center bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200">
+                                <img src="/icons8-whatsapp.svg" alt="" className="mr-2 h-5 w-5" /> Request Plan Details
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Certificates */}
+            <AnimatedSection>
+                <section className="py-8 md:py-12 pb-12 md:pb-20">
+                    <div className={`${panel} text-center`}>
+                        <Medal className="mx-auto h-14 w-14 text-amber-400" />
+                        <p className="mt-4 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-amber-400">Celebrate every milestone</p>
+                        <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">Certificates of Completion</h2>
+                        <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-base sm:text-lg">Every student receives a certificate when they complete a level, to recognise their hard work and progress.</p>
+                        <AppLink to="book-free-trial" navigate={navigate} className="mt-8 inline-flex items-center cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
+                            Start with a FREE Trial <ArrowRight className="ml-2 h-5 w-5" />
+                        </AppLink>
+                    </div>
+                </section>
+            </AnimatedSection>
+        </main>
+    );
+};
+
+const FaqPage = ({ navigate }) => (
+    <main className="py-12 md:py-20">
+        <section>
+            <div className="container mx-auto px-4 sm:px-6 max-w-4xl bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
+                <div className="text-center mb-10 md:mb-12">
+                    <h1 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h1>
+                    <p className="mt-4 text-gray-400">Everything parents usually ask about our online chess classes.</p>
+                </div>
+                <FaqList />
+                <div className="text-center mt-10">
+                    <AppLink to="book-free-trial" navigate={navigate} className="inline-block cta-button bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/50">
+                        Book a FREE Trial Class
+                    </AppLink>
+                </div>
+            </div>
+        </section>
+    </main>
+);
 
 const HiringPage = () => {
     const formRef = useRef();
@@ -855,7 +1314,7 @@ const HiringPage = () => {
                 <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                              <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                                  <div className="text-center mb-12">
-                                     <h2 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h2>
+                                     <h1 className="text-3xl md:text-4xl font-bold text-white">Join Our Team of Coaches</h1>
                                      <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
                                           Our vision is to ignite passion for kids in the world of Chess. If you are passionate about Chess Coaching, start your first move by filling the form.
                                      </p>
@@ -930,7 +1389,7 @@ const ContactPage = () => (
             <div className="container mx-auto px-4 sm:px-6">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">Contact Us</h2>
+                        <h1 className="text-3xl md:text-4xl font-bold text-white">Contact Us</h1>
                         <p className="mt-4 text-gray-400 max-w-2xl mx-auto">We are here to help you get started on your chess journey.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -1041,17 +1500,20 @@ const TimedPopup = ({ page }) => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (page === 'admin' || sessionStorage.getItem('popupShown')) {
+        // No popup on the admin page or on the page that already shows the trial form.
+        if (page === 'admin' || page === 'book-free-trial' || sessionStorage.getItem('popupShown')) {
             return;
         }
 
         const timer = setTimeout(() => {
             setIsVisible(true);
             sessionStorage.setItem('popupShown', 'true');
-        }, 10000); // 5 seconds
+        }, 10000); // 10 seconds
 
         return () => clearTimeout(timer);
     }, [page]);
+
+    const [isBookingStep, setIsBookingStep] = useState(false);
 
     const closePopup = () => {
         setIsVisible(false);
@@ -1061,20 +1523,20 @@ const TimedPopup = ({ page }) => {
         <div
             id="timed-popup"
             onClick={closePopup}
-            className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300
+            className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 transition-all duration-300
                 ${isVisible ? 'bg-black/70 backdrop-blur-sm opacity-100' : 'bg-transparent backdrop-blur-none opacity-0 pointer-events-none'}`}
         >
             <div
                 id="popup-panel"
                 onClick={(e) => e.stopPropagation()}
-                className={`relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-lg p-8 transition-all duration-300
+                className={`relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full ${isBookingStep ? 'max-w-3xl p-3 pt-10 sm:p-6 sm:pt-10' : 'max-w-lg p-5 pt-10 sm:p-8'} max-h-[92vh] overflow-y-auto overscroll-contain transition-all duration-300
                     ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             >
-                <button onClick={closePopup} className="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <button onClick={closePopup} aria-label="Close" className="absolute top-3 right-3 p-1 text-gray-400 hover:text-white transition">
                     <X />
                 </button>
-                <h3 className="text-2xl font-bold text-center text-white mb-6">Book Your FREE Trial Class!</h3>
-                <TrialForm isPopup={true} onClose={closePopup} />
+                {!isBookingStep && <h2 className="text-xl sm:text-2xl font-bold text-center text-white mb-5 sm:mb-6">Book Your FREE Trial Class!</h2>}
+                <TrialForm variant="popup" onBookingStep={() => setIsBookingStep(true)} />
             </div>
         </div>
     );
@@ -1085,7 +1547,7 @@ const TermsPage = () => (
         <section id="terms">
             <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
                 <div className="bg-gray-900/70 backdrop-blur-md rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-700">
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center">Terms and Policies</h2>
+                    <h1 className="text-3xl font-bold text-white mb-8 text-center">Terms and Policies</h1>
 
                     <div className="space-y-8 text-gray-300">
                         <div>
@@ -1407,106 +1869,70 @@ const AdminPage = () => {
 
 // --- Main App Component ---
 export default function App() {
-    const getPageFromPath = (path) => {
-        // Handle /blog/all-posts first
-        if (path === '/blog/all-posts') {
-            return 'all-posts';
-        }
-        // Handle blog detail path
-        if (path.startsWith('/blog/')) {
-            return 'blog-detail';
-        }
-
-        const pageName = path.substring(1); // remove leading '/'
-        switch (pageName) {
-            case 'admin':
-            case 'hiring':
-            case 'contact':
-            case 'terms':
-                return pageName;
-            case '':
-            default:
-                return 'home';
-        }
+    // URL path -> { page, slug }
+    const parseLocation = (path) => {
+        const clean = path.replace(/\/+$/, '') || '/';
+        if (clean === '/blog' || clean === '/blog/all-posts') return { page: 'blog' };
+        if (clean.startsWith('/blog/')) return { page: 'blog-detail', slug: decodeURIComponent(clean.slice('/blog/'.length)) };
+        const match = Object.entries(PAGE_META).find(([, meta]) => meta.path === clean);
+        return { page: match ? match[0] : 'home' };
     };
 
-    const [page, setPage] = useState('home');
-    const [currentPostSlug, setCurrentPostSlug] = useState(null);
-    const [homeView, setHomeView] = useState('main');
+    const initial = parseLocation(window.location.pathname);
+    const [page, setPage] = useState(initial.page);
+    const [currentPostSlug, setCurrentPostSlug] = useState(initial.slug || null);
     const [visible, setVisible] = useState(false);
 
-    // Initial Load: Parse URL to set initial state
-    useEffect(() => {
-        const path = window.location.pathname;
-        const initialPage = getPageFromPath(path);
+    const scrollToAnchor = (anchor) => {
+        // Wait a tick so the target page has rendered.
+        setTimeout(() => {
+            const el = anchor && document.querySelector(anchor);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    };
 
-        if (initialPage === 'blog-detail') {
-            // Extract everything after /blog/ as the slug
-            const slug = path.split('/blog/')[1];
-            setCurrentPostSlug(slug);
-        } else if (initialPage === 'all-posts') {
-            setHomeView('allPosts');
-        }
-        
-        setPage(initialPage);
+    useEffect(() => {
         setVisible(true);
+        if (window.location.hash) scrollToAnchor(window.location.hash);
     }, []);
 
-    // Custom Navigate Function to handle history and state
-    const navigate = (newPage, data = null) => {
-        let path = '/';
-        
-        if (newPage === 'home') {
-            path = '/';
-            setHomeView('main');
-        } else if (newPage === 'all-posts') {
-            path = '/blog/all-posts';
-            setHomeView('allPosts');
-            setPage('home');
-        } else if (newPage === 'blog-detail' && data) {
-            let slug = createSlug(data.studentName);
-            // Format: smart-kid-of-the-month-from-usa-{month}-{year}-{studentName}
-            // Logic updated to match requirement
-            if (data.month && data.year) {
-                const prefix = "smart-kid-of-the-month-from-usa";
-                slug = `${prefix}-${createSlug(data.month)}-${createSlug(data.year)}-${slug}`;
-            }
-            path = `/blog/${slug}`;
-            setCurrentPostSlug(slug);
-        } else {
-            path = `/${newPage}`;
-        }
+    // Keep <title>, description and canonical in sync with the current page.
+    // Blog posts set their own once the post has loaded.
+    useEffect(() => {
+        if (page === 'blog-detail') return;
+        const meta = PAGE_META[page] || PAGE_META.home;
+        applyMeta({ title: meta.title, description: meta.description, path: meta.path, noindex: meta.noindex });
+    }, [page]);
 
-        window.history.pushState({}, '', path);
+    const navigate = (newPage, data = null, anchor = '') => {
+        const path = pathFor(newPage, data);
+        if (newPage === 'blog-detail' && data) setCurrentPostSlug(postSlug(data));
+        window.history.pushState({}, '', `${path}${anchor}`);
         setPage(newPage);
-        window.scrollTo(0, 0);
+        if (anchor) scrollToAnchor(anchor);
+        else window.scrollTo(0, 0);
+        if (typeof window.fbq === 'function') window.fbq('track', 'PageView');
     };
 
     // Sync URL to state on back/forward buttons
     useEffect(() => {
         const handlePopState = () => {
-            const path = window.location.pathname;
-            const newPage = getPageFromPath(path);
-            
-            if (newPage === 'blog-detail') {
-                const slug = path.split('/blog/')[1];
-                setCurrentPostSlug(slug);
-            } else if (newPage === 'all-posts') {
-                setHomeView('allPosts');
-                setPage('home');
-            } else {
-                setPage(newPage);
-            }
+            const next = parseLocation(window.location.pathname);
+            if (next.slug) setCurrentPostSlug(next.slug);
+            setPage(next.page);
         };
-
         window.addEventListener('popstate', handlePopState);
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
     const renderPage = () => {
         switch (page) {
+            case 'book-free-trial':
+                return <BookTrialPage navigate={navigate} />;
+            case 'services':
+                return <ServicesPage navigate={navigate} />;
+            case 'faq':
+                return <FaqPage navigate={navigate} />;
             case 'hiring':
                 return <HiringPage />;
             case 'contact':
@@ -1517,15 +1943,11 @@ export default function App() {
                 return <AdminPage />;
             case 'blog-detail':
                 return <BlogDetailPage slug={currentPostSlug} navigate={navigate} />;
+            case 'blog':
+                return <HomePage view="allPosts" navigate={navigate} />;
             case 'home':
             default:
-                return <HomePage 
-                    setPage={setPage} 
-                    view={homeView} 
-                    setView={setHomeView} 
-                    navigateToPost={(post) => navigate('blog-detail', post)}
-                    navigate={navigate}
-                />;
+                return <HomePage view="main" navigate={navigate} />;
         }
     };
 
@@ -1583,16 +2005,16 @@ export default function App() {
                 }
             `}</style>
             <div className={`bg-gray-900 text-white min-h-screen flex flex-col transition-opacity duration-700 ease-in ${visible ? 'opacity-100' : 'opacity-0'}`} style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=2070&auto-format&fit=crop')`,
+                backgroundImage: `url('https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=2070&auto=format&fit=crop')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
             }}>
-                <Header setPage={setPage} setHomeView={setHomeView} navigate={navigate} />
+                <Header navigate={navigate} />
                 <div className="flex-grow">
                     {renderPage()}
                 </div>
-                <Footer setPage={setPage} navigate={navigate} />
+                <Footer navigate={navigate} />
                 <WhatsAppButton />
                 <TimedPopup page={page} />
             </div>

@@ -1,7 +1,11 @@
 {
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/blog/all-posts", "destination": "/blog", "permanent": true }
+  ],
   "rewrites": [
     {
-      "source": "/((?!api/|.*\\..*).*)",
+      "source": "/((?!api/|.*\..*).*)",
       "destination": "/index.html"
     }
   ]

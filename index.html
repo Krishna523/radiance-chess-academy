@@ -1,83 +1,96 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- <link rel="icon" type="image/png" href="/icon.png" /> -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111827" />
+
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" sizes="192x192" href="/icon-192.png" />
-    <meta charset="UTF-8" />
 
-    <!-- Viewport for Responsive Design -->
+    <!-- Speed up connections to third-party hosts used on first load -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- SEO: Main Title Tag (Appears in browser tabs and search results) -->
-
+    <!-- SEO: these tags are rewritten per page by scripts/prerender.mjs and at runtime by the app -->
     <title>Radiance Chess Academy | Online Chess Classes for Kids (5-16)</title>
-
+    <meta name="description" content="Join Radiance Chess Academy for fun and interactive online chess classes. Our FIDE-rated coaches help kids aged 5-16 master the game. Book a free trial class today!" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://www.radiancechessacademy.com/" />
-    <meta
-      name="google-site-verification"
-      content="O-YW6WBgX88hhkxfF0IlgSlu4eC0ZPrD9qcu_aboFNE"
-    />
+    <meta name="google-site-verification" content="O-YW6WBgX88hhkxfF0IlgSlu4eC0ZPrD9qcu_aboFNE" />
+    <meta name="keywords" content="online chess classes, chess academy, chess for kids, kids chess coaching, learn chess online, FIDE rated coach, chess lessons, chess for children, online chess training, free chess trial class" />
 
-    <!-- SEO: Meta Description (The snippet shown under your title in search results) -->
-
-    <meta
-      name="description"
-      content="Join Radiance Chess Academy for fun and interactive online chess classes. Our FIDE-rated coaches help kids aged 5-16 master the game. Book a free trial class today!"
-    />
-
-    <!-- SEO: Keywords (Helps some search engines understand your content) -->
-
-    <meta
-      name="keywords"
-      content="online chess classes, chess academy, chess for kids, kids chess coaching, learn chess online, FIDE rated coach, chess lessons, chess for children, online chess training"
-    />
-
-    <!-- Open Graph / Facebook Meta Tags (For sharing on social media) -->
-
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-
-    <meta
-      property="og:title"
-      content="Radiance Chess Academy | Online Chess Classes for Kids"
-    />
-
-    <meta
-      property="og:description"
-      content="Fun & interactive online classes with FIDE-rated coaches for kids aged 5-16. Book a free trial today!"
-    />
-
+    <meta property="og:site_name" content="Radiance Chess Academy" />
+    <meta property="og:title" content="Radiance Chess Academy | Online Chess Classes for Kids (5-16)" />
+    <meta property="og:description" content="Join Radiance Chess Academy for fun and interactive online chess classes. Our FIDE-rated coaches help kids aged 5-16 master the game. Book a free trial class today!" />
     <meta property="og:url" content="https://www.radiancechessacademy.com/" />
-
-    <meta
-      property="og:image"
-      content="https://res.cloudinary.com/dknf3a0pt/image/upload/v1761023563/icon2_ypdhlx.png"
-    />
-
+    <meta property="og:image" content="https://res.cloudinary.com/dknf3a0pt/image/upload/v1761023563/icon2_ypdhlx.png" />
     <meta property="og:image:width" content="1200" />
-
     <meta property="og:image:height" content="630" />
 
-    <!-- Twitter Card Meta Tags (For sharing on Twitter) -->
-
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Radiance Chess Academy | Online Chess Classes for Kids (5-16)" />
+    <meta name="twitter:description" content="Join Radiance Chess Academy for fun and interactive online chess classes. Our FIDE-rated coaches help kids aged 5-16 master the game. Book a free trial class today!" />
+    <meta name="twitter:image" content="https://res.cloudinary.com/dknf3a0pt/image/upload/v1761023563/icon2_ypdhlx.png" />
 
-    <meta
-      name="twitter:title"
-      content="Radiance Chess Academy | Online Chess Classes for Kids"
-    />
+    <!-- Structured data: helps Google show the academy's name, logo, contacts and site links -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://www.radiancechessacademy.com/#organization",
+            "name": "Radiance Chess Academy",
+            "url": "https://www.radiancechessacademy.com/",
+            "logo": "https://www.radiancechessacademy.com/icon.png",
+            "image": "https://res.cloudinary.com/dknf3a0pt/image/upload/v1761023563/icon2_ypdhlx.png",
+            "description": "Online chess classes for kids aged 5-16 with FIDE-rated coaches.",
+            "email": "radiancechessacademy.online@gmail.com",
+            "sameAs": [
+              "https://www.facebook.com/share/1BYErEka53/",
+              "https://www.instagram.com/radiancechessacademy"
+            ],
+            "address": [
+              {
+                "@type": "PostalAddress",
+                "streetAddress": "500 W Madison Street",
+                "addressLocality": "Chicago",
+                "addressRegion": "IL",
+                "postalCode": "60661",
+                "addressCountry": "US"
+              },
+              {
+                "@type": "PostalAddress",
+                "streetAddress": "Near Tidel Park, Tharamani",
+                "addressLocality": "Chennai",
+                "addressRegion": "Tamil Nadu",
+                "postalCode": "600113",
+                "addressCountry": "IN"
+              }
+            ],
+            "contactPoint": [
+              { "@type": "ContactPoint", "telephone": "+1-732-568-2619", "contactType": "customer service", "areaServed": "US" },
+              { "@type": "ContactPoint", "telephone": "+91-93426-78754", "contactType": "customer service", "areaServed": "IN" }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.radiancechessacademy.com/#website",
+            "name": "Radiance Chess Academy",
+            "url": "https://www.radiancechessacademy.com/",
+            "publisher": { "@id": "https://www.radiancechessacademy.com/#organization" }
+          }
+        ]
+      }
+    </script>
+    <!--PAGE_JSONLD-->
 
-    <meta
-      name="twitter:description"
-      content="Fun & interactive online classes with FIDE-rated coaches for kids aged 5-16. Book a free trial today!"
-    />
-    <meta
-      name="twitter:image"
-      content="https://res.cloudinary.com/dknf3a0pt/image/upload/v1761023563/icon2_ypdhlx.png"
-    />
     <!-- Meta Pixel Code -->
     <script>
       !(function (f, b, e, v, n, t, s) {
@@ -106,16 +119,17 @@
       fbq("init", "846514975091357");
       fbq("track", "PageView");
     </script>
+    <!-- End Meta Pixel Code -->
+  </head>
+  <body>
     <noscript
       ><img
         height="1"
         width="1"
         style="display: none"
+        alt=""
         src="https://www.facebook.com/tr?id=846514975091357&ev=PageView&noscript=1"
     /></noscript>
-    <!-- End Meta Pixel Code -->
-  </head>
-  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

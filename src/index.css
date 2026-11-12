@@ -1,1 +1,97 @@
 @import "tailwindcss";
+
+/* WhatsApp number field (react-phone-input-2): dark theme to match the other form inputs */
+.rca-phone.react-tel-input {
+  font-family: inherit;
+}
+.rca-phone.react-tel-input .form-control {
+  width: 100%;
+  height: 50px;
+  padding-left: 58px;
+  font-size: 1rem;
+  color: #fff;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.rca-phone.react-tel-input .form-control::placeholder {
+  color: #9ca3af;
+}
+.rca-phone.react-tel-input .form-control:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #f59e0b;
+}
+.rca-phone.react-tel-input .flag-dropdown {
+  background: #4b5563;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem 0 0 0.375rem;
+}
+.rca-phone.react-tel-input .flag-dropdown.open,
+.rca-phone.react-tel-input .flag-dropdown.open .selected-flag {
+  background: #4b5563;
+  border-radius: 0.375rem 0 0 0.375rem;
+}
+.rca-phone.react-tel-input .selected-flag {
+  width: 48px;
+  padding-left: 12px;
+  border-radius: 0.375rem 0 0 0.375rem;
+}
+.rca-phone.react-tel-input .selected-flag:hover,
+.rca-phone.react-tel-input .selected-flag:focus {
+  background: #6b7280;
+}
+.rca-phone.react-tel-input .selected-flag .arrow {
+  border-top-color: #d1d5db;
+}
+.rca-phone.react-tel-input .selected-flag .arrow.up {
+  border-bottom-color: #d1d5db;
+}
+/* Dropdown list */
+.rca-phone.react-tel-input .country-list {
+  width: min(320px, calc(100vw - 48px));
+  max-height: 260px;
+  margin-top: 6px;
+  color: #e5e7eb;
+  background: #1f2937;
+  border: 1px solid #4b5563;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  text-align: left;
+}
+.rca-phone.react-tel-input .country-list .search {
+  padding: 10px;
+  background: #1f2937;
+}
+.rca-phone.react-tel-input .country-list .search-box {
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  color: #fff;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem;
+}
+.rca-phone.react-tel-input .country-list .search-box:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+.rca-phone.react-tel-input .country-list .country {
+  padding: 9px 12px;
+}
+.rca-phone.react-tel-input .country-list .country .dial-code {
+  float: right;
+  color: #9ca3af;
+}
+.rca-phone.react-tel-input .country-list .country:hover,
+.rca-phone.react-tel-input .country-list .country.highlight {
+  background: #374151;
+}
+.rca-phone.react-tel-input .country-list .divider {
+  border-bottom-color: #4b5563;
+}
+.rca-phone.react-tel-input .country-list .no-entries-message {
+  color: #9ca3af;
+}
